@@ -2,7 +2,7 @@
 Copyright © 2013-2018 chibayuki@foxmail.com
 
 五子棋
-Version 7.1.17000.5602.R16.180602-0000
+Version 7.1.17000.5602.R16.180604-0000
 
 This file is part of 五子棋
 
@@ -39,7 +39,7 @@ namespace WinFormApp
         private static readonly Int32 BuildNumber = new Version(Application.ProductVersion).Build; // 版本号。
         private static readonly Int32 BuildRevision = new Version(Application.ProductVersion).Revision; // 修订版本。
         private static readonly string LabString = "R16"; // 分支名。
-        private static readonly string BuildTime = "180602-0000"; // 编译时间。
+        private static readonly string BuildTime = "180604-0000"; // 编译时间。
 
         //
 
@@ -1730,7 +1730,7 @@ namespace WinFormApp
                 {
                     return Me.RecommendColors.Background.ToColor();
                 }
-                else if (E >= 1)
+                else if (E > 0)
                 {
                     if (E == BLACK)
                     {
@@ -1996,7 +1996,7 @@ namespace WinFormApp
                                 default: Flag = true; break;
                             }
 
-                            IsShownBanPoint = (!Flag && GameUIPointedIndex == A);
+                            IsShownBanPoint = (!Flag && A == GameUIPointedIndex);
                             IsSelfBanPoint = true;
                         }
                     }
@@ -2040,7 +2040,7 @@ namespace WinFormApp
                         BmpGrap.FillEllipse(new LinearGradientBrush(new Point(Rect_Cen.X - 1, Rect_Cen.Y - 1), new Point(Rect_Cen.Right, Rect_Cen.Bottom), Cr_LT, Cr_RB), Rect_Cen);
                     };
 
-                    if (GameUIPointedIndex == A)
+                    if (A == GameUIPointedIndex)
                     {
                         if (IsShownBanPoint)
                         {
@@ -6095,6 +6095,8 @@ namespace WinFormApp
             //
 
             Panel_Environment.Focus();
+
+            //
 
             if (GameState == GameStates.Ongoing)
             {
