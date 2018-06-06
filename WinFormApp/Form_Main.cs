@@ -2,7 +2,7 @@
 Copyright © 2013-2018 chibayuki@foxmail.com
 
 五子棋
-Version 7.1.17000.5602.R16.180604-0000
+Version 7.1.17000.5602.R16.180606-0000
 
 This file is part of 五子棋
 
@@ -39,7 +39,7 @@ namespace WinFormApp
         private static readonly Int32 BuildNumber = new Version(Application.ProductVersion).Build; // 版本号。
         private static readonly Int32 BuildRevision = new Version(Application.ProductVersion).Revision; // 修订版本。
         private static readonly string LabString = "R16"; // 分支名。
-        private static readonly string BuildTime = "180604-0000"; // 编译时间。
+        private static readonly string BuildTime = "180606-0000"; // 编译时间。
 
         //
 
@@ -209,9 +209,9 @@ namespace WinFormApp
         private enum GameStates { NULL = -1, BlackWin, WhiteWin, Draw, Ongoing, COUNT } // 棋局状态枚举。
         private GameStates GameState = GameStates.Ongoing; // 当前棋局状态。
 
-        private List<Point> JdgBasisIDList = new List<Point>(0); // 表示作为棋局状态判定依据的索引列表。【注意】仅当终局时此列表不为空。
+        private List<Point> JdgBasisIDList = new List<Point>(CAPACITY * CAPACITY); // 表示作为棋局状态判定依据的索引列表。【注意】仅当终局时此列表不为空。
 
-        private List<Point> BanIDList = new List<Point>(0); // 黑方禁手点索引列表。【注意】仅当正在使用相关功能时此列表不为空。
+        private List<Point> BanIDList = new List<Point>(CAPACITY * CAPACITY); // 黑方禁手点索引列表。【注意】仅当正在使用相关功能时此列表不为空。
 
         //
 
@@ -312,7 +312,7 @@ namespace WinFormApp
 
         private Int32[,] ElementArray_Last = new Int32[CAPACITY, CAPACITY]; // 上次游戏的元素矩阵。
 
-        private List<Point> ElementIndexList_Last = new List<Point>(0); // 上次游戏的元素索引列表。
+        private List<Point> ElementIndexList_Last = new List<Point>(CAPACITY * CAPACITY); // 上次游戏的元素索引列表。
 
         #endregion
 
@@ -937,7 +937,7 @@ namespace WinFormApp
                     if (OldVersionList.Count > 0)
                     {
                         List<Version> OldVersionList_Copy = new List<Version>(OldVersionList);
-                        List<Version> OldVersionList_Sorted = new List<Version>(0);
+                        List<Version> OldVersionList_Sorted = new List<Version>(OldVersionList_Copy.Count);
 
                         while (OldVersionList_Copy.Count > 0)
                         {
@@ -957,11 +957,13 @@ namespace WinFormApp
 
                         for (int i = 0; i < OldVersionList_Sorted.Count; i++)
                         {
-                            if (Directory.Exists(RootDir_Product + "\\" + OldVersionList_Sorted[i].Build + "." + OldVersionList_Sorted[i].Revision))
+                            string Dir = RootDir_Product + "\\" + OldVersionList_Sorted[i].Build + "." + OldVersionList_Sorted[i].Revision;
+
+                            if (Directory.Exists(Dir))
                             {
                                 try
                                 {
-                                    Com.IO.CopyFolder(RootDir_Product + "\\" + OldVersionList_Sorted[i].Build + "." + OldVersionList_Sorted[i].Revision, RootDir_CurrentVersion);
+                                    Com.IO.CopyFolder(Dir, RootDir_CurrentVersion);
 
                                     break;
                                 }
@@ -1588,7 +1590,19 @@ namespace WinFormApp
             // 返回二维矩阵的浅表副本。Array：矩阵。
             //
 
-            return (Int32[,])Array.Clone();
+            try
+            {
+                if (Array != null)
+                {
+                    return (Int32[,])Array.Clone();
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         // 冗余量。
@@ -1601,20 +1615,25 @@ namespace WinFormApp
 
             try
             {
-                Int32 ZeroCount = 0;
-
-                for (int X = 0; X < Cap.Width; X++)
+                if (Array != null)
                 {
-                    for (int Y = 0; Y < Cap.Height; Y++)
+                    Int32 ZeroCount = 0;
+
+                    for (int X = 0; X < Cap.Width; X++)
                     {
-                        if (Array[X, Y] == 0)
+                        for (int Y = 0; Y < Cap.Height; Y++)
                         {
-                            ZeroCount++;
+                            if (Array[X, Y] == 0)
+                            {
+                                ZeroCount++;
+                            }
                         }
                     }
+
+                    return ZeroCount;
                 }
 
-                return ZeroCount;
+                return 0;
             }
             catch
             {
@@ -1630,26 +1649,31 @@ namespace WinFormApp
             // 返回二维矩阵中所有值为指定值的元素的索引的列表。Array：矩阵，索引为 [x, y]；Cap：矩阵的大小，分量 (Width, Height) 分别表示沿 x 方向和沿 y 方向的元素数量；Value：指定值。
             //
 
-            List<Point> L = new List<Point>(0);
-
             try
             {
-                for (int X = 0; X < Cap.Width; X++)
+                if (Array != null)
                 {
-                    for (int Y = 0; Y < Cap.Height; Y++)
+                    List<Point> L = new List<Point>(Cap.Width * Cap.Height);
+
+                    for (int X = 0; X < Cap.Width; X++)
                     {
-                        if (Array[X, Y] == Value)
+                        for (int Y = 0; Y < Cap.Height; Y++)
                         {
-                            L.Add(new Point(X, Y));
+                            if (Array[X, Y] == Value)
+                            {
+                                L.Add(new Point(X, Y));
+                            }
                         }
                     }
+
+                    return L;
                 }
 
-                return L;
+                return new List<Point>(0);
             }
             catch
             {
-                return L;
+                return new List<Point>(0);
             }
         }
 
@@ -1661,13 +1685,20 @@ namespace WinFormApp
             // 向二维矩阵逻辑添加一个元素。Array：矩阵，索引为 [x, y]；Cap：矩阵的大小，分量 (Width, Height) 分别表示沿 x 方向和沿 y 方向的元素数量；A：索引；E：元素的值。
             //
 
-            if (E != 0 && A.X >= 0 && A.X < Cap.Width && A.Y >= 0 && A.Y < Cap.Height)
+            try
             {
-                if (Array[A.X, A.Y] == 0)
+                if (Array != null)
                 {
-                    Array[A.X, A.Y] = E;
+                    if (E != 0 && (A.X >= 0 && A.X < Cap.Width && A.Y >= 0 && A.Y < Cap.Height))
+                    {
+                        if (Array[A.X, A.Y] == 0)
+                        {
+                            Array[A.X, A.Y] = E;
+                        }
+                    }
                 }
             }
+            catch { }
         }
 
         #endregion
@@ -2273,7 +2304,7 @@ namespace WinFormApp
 
         // 统计。
 
-        private struct StatsInfo // 统计信息。
+        private class StatsInfo // 统计信息。
         {
             public List<Point[]> Chain_FIR; // 成五链列表。
             public List<Point[]> Chain_Long; // 长连链列表。
@@ -2358,7 +2389,7 @@ namespace WinFormApp
 
                 for (int X = 0; X < Cap.Width; X++)
                 {
-                    List<Point> AL = new List<Point>(0);
+                    List<Point> AL = new List<Point>(Cap.Height);
 
                     for (int Y = 0; Y < Cap.Height; Y++)
                     {
@@ -2400,7 +2431,7 @@ namespace WinFormApp
 
                 for (int Y = 0; Y < Cap.Height; Y++)
                 {
-                    List<Point> AL = new List<Point>(0);
+                    List<Point> AL = new List<Point>(Cap.Width);
 
                     for (int X = 0; X < Cap.Width; X++)
                     {
@@ -2442,7 +2473,7 @@ namespace WinFormApp
 
                 for (int i = 0; i <= 2 * (Cap.Width - 1); i++)
                 {
-                    List<Point> AL = new List<Point>(0);
+                    List<Point> AL = new List<Point>(2 * Cap.Width);
 
                     for (int X = (i < Cap.Width ? 0 : i - (Cap.Width - 1)); X <= (i < Cap.Width ? i : Cap.Width - 1); X++)
                     {
@@ -2486,7 +2517,7 @@ namespace WinFormApp
 
                 for (int i = 0; i <= 2 * (Cap.Width - 1); i++)
                 {
-                    List<Point> AL = new List<Point>(0);
+                    List<Point> AL = new List<Point>(2 * Cap.Width);
 
                     for (int X = (i < Cap.Width ? 0 : i - (Cap.Width - 1)); X <= (i < Cap.Width ? i : Cap.Width - 1); X++)
                     {
@@ -2589,7 +2620,7 @@ namespace WinFormApp
 
                         if (ZeroCntIn <= 1 && OtherCnt == 0)
                         {
-                            List<Point> AL = new List<Point>(0);
+                            List<Point> AL = new List<Point>(IDAry.Length);
 
                             foreach (var V in IDAry)
                             {
@@ -2743,7 +2774,7 @@ namespace WinFormApp
 
                         if (ZeroCntIn <= 1 && OtherCnt == 0)
                         {
-                            List<Point> AL = new List<Point>(0);
+                            List<Point> AL = new List<Point>(IDAry.Length);
 
                             foreach (var V in IDAry)
                             {
@@ -2899,7 +2930,7 @@ namespace WinFormApp
 
                         if (ZeroCntIn <= 1 && OtherCnt == 0)
                         {
-                            List<Point> AL = new List<Point>(0);
+                            List<Point> AL = new List<Point>(IDAry.Length);
 
                             foreach (var V in IDAry)
                             {
@@ -3055,7 +3086,7 @@ namespace WinFormApp
 
                         if (ZeroCntIn <= 1 && OtherCnt == 0)
                         {
-                            List<Point> AL = new List<Point>(0);
+                            List<Point> AL = new List<Point>(IDAry.Length);
 
                             foreach (var V in IDAry)
                             {
@@ -4112,13 +4143,13 @@ namespace WinFormApp
             // 获取指定棋局的黑方禁手点索引列表。Array：矩阵，索引为 [x, y]；Cap：矩阵的大小，分量 (Width, Height) 分别表示沿 x 方向和沿 y 方向的元素数量。
             //
 
-            List<Point> BIL = new List<Point>(0);
-
             try
             {
                 if (UseBalanceBreaker)
                 {
                     List<Point> ZL = GetCertainIndexListOfArray(Array, Cap, 0);
+
+                    List<Point> BIL = new List<Point>(ZL.Count);
 
                     foreach (var V in ZL)
                     {
@@ -4133,13 +4164,15 @@ namespace WinFormApp
                             BIL.Add(V);
                         }
                     }
+
+                    return BIL;
                 }
 
-                return BIL;
+                return new List<Point>(0);
             }
             catch
             {
-                return BIL;
+                return new List<Point>(0);
             }
         }
 
@@ -4414,12 +4447,7 @@ namespace WinFormApp
 
                     if (UseBalanceBreaker && ShowBanPoint)
                     {
-                        List<Point> OldBanIDList = new List<Point>(0);
-
-                        foreach (var V in BanIDList)
-                        {
-                            OldBanIDList.Add(V);
-                        }
+                        List<Point> OldBanIDList = new List<Point>(BanIDList);
 
                         BanIDList.Clear();
 
@@ -4701,7 +4729,7 @@ namespace WinFormApp
 
         private Int32 PRIMin = Int32.MaxValue; // 当前所有搜索分支中的最高优先级。
 
-        private List<Point> ZeroIndexList = new List<Point>(0); // 零值元素索引列表。
+        private List<Point> ZeroIndexList = new List<Point>(CAPACITY * CAPACITY); // 零值元素索引列表。
 
         private void AsyncWorkerStart()
         {
@@ -4786,7 +4814,7 @@ namespace WinFormApp
 
                 //
 
-                List<Point> AL = new List<Point>(0);
+                List<Point> AL = new List<Point>(ZeroIndexList.Count);
 
                 for (int i = 0; i < ZeroIndexList.Count; i++)
                 {
@@ -4918,7 +4946,7 @@ namespace WinFormApp
                                     {
                                         if (F_AI && IndexIsInChainList(A, SI_AI.Chain_4S))
                                         {
-                                            List<Point> NextIDList = new List<Point>(0);
+                                            List<Point> NextIDList = new List<Point>(80);
 
                                             for (int X = Math.Max(0, A.X - 4); X < Math.Min(Range.Width, A.X + 5); X++)
                                             {
@@ -5003,7 +5031,7 @@ namespace WinFormApp
                                     {
                                         if (F_User && IndexIsInChainList(A, SI_User.Chain_4S))
                                         {
-                                            List<Point> NextIDList = new List<Point>(0);
+                                            List<Point> NextIDList = new List<Point>(80);
 
                                             for (int X = Math.Max(0, A.X - 4); X < Math.Min(Range.Width, A.X + 5); X++)
                                             {
@@ -5090,7 +5118,7 @@ namespace WinFormApp
                                     {
                                         if (F_AI && IndexIsInChainList(A, SI_AI.Chain_3A))
                                         {
-                                            List<Point> NextIDList = new List<Point>(0);
+                                            List<Point> NextIDList = new List<Point>(80);
 
                                             for (int X = Math.Max(0, A.X - 4); X < Math.Min(Range.Width, A.X + 5); X++)
                                             {
@@ -5132,7 +5160,7 @@ namespace WinFormApp
                                                 }
                                             }
 
-                                            List<Point> To4IDList = new List<Point>(0);
+                                            List<Point> To4IDList = new List<Point>(NextIDList.Count);
 
                                             foreach (var V in NextIDList)
                                             {
@@ -5179,7 +5207,7 @@ namespace WinFormApp
                                     {
                                         if (F_User && IndexIsInChainList(A, SI_User.Chain_3A))
                                         {
-                                            List<Point> NextIDList = new List<Point>(0);
+                                            List<Point> NextIDList = new List<Point>(80);
 
                                             for (int X = Math.Max(0, A.X - 4); X < Math.Min(Range.Width, A.X + 5); X++)
                                             {
@@ -5221,7 +5249,7 @@ namespace WinFormApp
                                                 }
                                             }
 
-                                            List<Point> To4IDList = new List<Point>(0);
+                                            List<Point> To4IDList = new List<Point>(NextIDList.Count);
 
                                             foreach (var V in NextIDList)
                                             {
@@ -5278,7 +5306,7 @@ namespace WinFormApp
                                 case 16: // 攻：此落子形成冲四或活三，并且在被防守后仍是接下来可能形成活四-任意、冲四-冲四、冲四-活三、活三-活三的构成子
                                     if (F_AI && (IndexIsInChainList(A, SI_AI.Chain_4S) || IndexIsInChainList(A, SI_AI.Chain_3A)))
                                     {
-                                        List<Point> AntiIDList = new List<Point>(0);
+                                        List<Point> AntiIDList = new List<Point>(80);
 
                                         for (int X = Math.Max(0, A.X - 4); X < Math.Min(Range.Width, A.X + 5); X++)
                                         {
@@ -5320,7 +5348,7 @@ namespace WinFormApp
                                             }
                                         }
 
-                                        List<Point> UserNextIDList = new List<Point>(0);
+                                        List<Point> UserNextIDList = new List<Point>(AntiIDList.Count);
 
                                         foreach (var V in AntiIDList)
                                         {
@@ -5349,7 +5377,7 @@ namespace WinFormApp
 
                                                 ArrayLogicalAppend(_Ary_User, Range, V_N, ChessColor_User);
 
-                                                List<Point> ZeroIDList = new List<Point>(0);
+                                                List<Point> ZeroIDList = new List<Point>(80);
 
                                                 for (int X = Math.Max(0, A.X - 4); X < Math.Min(Range.Width, A.X + 5); X++)
                                                 {
@@ -5398,7 +5426,7 @@ namespace WinFormApp
                                 case 17: // 防：此落子形成冲四或活三，并且在被防守后仍是接下来可能形成活四-任意、冲四-冲四、冲四-活三、活三-活三的构成子
                                     if (F_User && (IndexIsInChainList(A, SI_User.Chain_4S) || IndexIsInChainList(A, SI_User.Chain_3A)))
                                     {
-                                        List<Point> AntiIDList = new List<Point>(0);
+                                        List<Point> AntiIDList = new List<Point>(80);
 
                                         for (int X = Math.Max(0, A.X - 4); X < Math.Min(Range.Width, A.X + 5); X++)
                                         {
@@ -5440,7 +5468,7 @@ namespace WinFormApp
                                             }
                                         }
 
-                                        List<Point> AINextIDList = new List<Point>(0);
+                                        List<Point> AINextIDList = new List<Point>(AntiIDList.Count);
 
                                         foreach (var V in AntiIDList)
                                         {
@@ -5469,7 +5497,7 @@ namespace WinFormApp
 
                                                 ArrayLogicalAppend(_Ary_AI, Range, V_N, ChessColor_AI);
 
-                                                List<Point> ZeroIDList = new List<Point>(0);
+                                                List<Point> ZeroIDList = new List<Point>(80);
 
                                                 for (int X = Math.Max(0, A.X - 4); X < Math.Min(Range.Width, A.X + 5); X++)
                                                 {
@@ -5634,15 +5662,12 @@ namespace WinFormApp
 
                     for (int i = 0; i < SrchRsltListAry.Length; i++)
                     {
-                        foreach (var V in SrchRsltListAry[i])
-                        {
-                            SrchRsltList.Add(V);
-                        }
+                        SrchRsltList.AddRange(SrchRsltListAry[i]);
                     }
 
                     if (SrchRsltList.Count > 0)
                     {
-                        List<Int32> PRIMinIDL = new List<Int32>(0);
+                        List<Int32> PRIMinIDL = new List<Int32>(SrchRsltList.Count);
 
                         for (int i = 0; i < SrchRsltList.Count; i++)
                         {
