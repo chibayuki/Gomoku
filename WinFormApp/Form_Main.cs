@@ -2,7 +2,7 @@
 Copyright © 2013-2018 chibayuki@foxmail.com
 
 五子棋
-Version 7.1.17000.5602.R16.180609-0000
+Version 7.1.17000.5602.R16.180610-0000
 
 This file is part of 五子棋
 
@@ -39,7 +39,7 @@ namespace WinFormApp
         private static readonly Int32 BuildNumber = new Version(Application.ProductVersion).Build; // 版本号。
         private static readonly Int32 BuildRevision = new Version(Application.ProductVersion).Revision; // 修订版本。
         private static readonly string LabString = "R16"; // 分支名。
-        private static readonly string BuildTime = "180609-0000"; // 编译时间。
+        private static readonly string BuildTime = "180610-0000"; // 编译时间。
 
         //
 
@@ -5978,8 +5978,8 @@ namespace WinFormApp
                 {
                     Grap.SmoothingMode = SmoothingMode.AntiAlias;
 
-                    Grap.DrawArc(new Pen(color, 2F), new Rectangle(new Point(6, 6), new Size(12, 12)), -150F, 300F);
-                    Grap.DrawLines(new Pen(color, 2F), new Point[] { new Point(6, 6), new Point(6, 10), new Point(10, 10) });
+                    Grap.DrawArc(new Pen(color, 2F), new Rectangle(new Point(5, 5), new Size(15, 15)), -150F, 300F);
+                    Grap.DrawLines(new Pen(color, 2F), new Point[] { new Point(5, 5), new Point(5, 10), new Point(10, 10) });
                 }
 
                 //
@@ -5990,8 +5990,8 @@ namespace WinFormApp
                 {
                     Grap.SmoothingMode = SmoothingMode.AntiAlias;
 
-                    Grap.DrawLine(new Pen(color, 2F), new Point(6, 6), new Point(20, 20));
-                    Grap.DrawLine(new Pen(color, 2F), new Point(20, 6), new Point(6, 20));
+                    Grap.DrawLine(new Pen(color, 2F), new Point(5, 5), new Point(19, 19));
+                    Grap.DrawLine(new Pen(color, 2F), new Point(19, 5), new Point(5, 19));
                 }
             }
         }
@@ -6098,8 +6098,10 @@ namespace WinFormApp
                 ElementSize = ElementSize * 9 / 10;
             }
 
-            Me.ClientSize = new Size(ElementSize * Range.Width, Panel_Current.Height + ElementSize * Range.Height);
-            Me.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width - Me.Width) / 2, (Screen.PrimaryScreen.WorkingArea.Height - Me.Height) / 2);
+            Rectangle NewBounds = new Rectangle();
+            NewBounds.Size = new Size(ElementSize * Range.Width, Me.CaptionBarHeight + Panel_Current.Height + ElementSize * Range.Height);
+            NewBounds.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width - NewBounds.Width) / 2, (Screen.PrimaryScreen.WorkingArea.Height - NewBounds.Height) / 2);
+            Me.Bounds = NewBounds;
 
             ElementSize = Math.Max(1, Math.Min(Panel_Environment.Width / Range.Width, Panel_Environment.Height / Range.Height));
 
@@ -6132,8 +6134,10 @@ namespace WinFormApp
 
             //
 
-            Me.ClientSize = FormClientInitialSize;
-            Me.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width - Me.Width) / 2, (Screen.PrimaryScreen.WorkingArea.Height - Me.Height) / 2);
+            Rectangle NewBounds = new Rectangle();
+            NewBounds.Size = new Size(FormClientInitialSize.Width, Me.CaptionBarHeight + FormClientInitialSize.Height);
+            NewBounds.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width - NewBounds.Width) / 2, (Screen.PrimaryScreen.WorkingArea.Height - NewBounds.Height) / 2);
+            Me.Bounds = NewBounds;
 
             //
 
@@ -6255,22 +6259,19 @@ namespace WinFormApp
 
         #region 鼠标滚轮功能
 
-        private void Form_Main_MouseWheel(object sender, MouseEventArgs e)
+        private void Panel_FunctionAreaOptionsBar_MouseWheel(object sender, MouseEventArgs e)
         {
             //
-            // 鼠标滚轮在 this 滚动。
+            // 鼠标滚轮在 Panel_FunctionAreaOptionsBar 滚动。
             //
 
-            if (Panel_FunctionAreaOptionsBar.Visible && Panel_FunctionAreaOptionsBar.Enabled && Com.Geometry.CursorIsInControl(Panel_FunctionAreaOptionsBar))
+            if (e.Delta < 0 && (Int32)FunctionAreaTab < (Int32)FunctionAreaTabs.COUNT - 1)
             {
-                if (e.Delta < 0 && (Int32)FunctionAreaTab < (Int32)FunctionAreaTabs.COUNT - 1)
-                {
-                    FunctionAreaTab++;
-                }
-                else if (e.Delta > 0 && (Int32)FunctionAreaTab > 0)
-                {
-                    FunctionAreaTab--;
-                }
+                FunctionAreaTab++;
+            }
+            else if (e.Delta > 0 && (Int32)FunctionAreaTab > 0)
+            {
+                FunctionAreaTab--;
             }
         }
 
@@ -6280,34 +6281,38 @@ namespace WinFormApp
             // 鼠标滚轮在 Panel_Environment 滚动。
             //
 
+            Rectangle NewBounds = Me.Bounds;
+
             if (Range.Width <= Range.Height)
             {
                 if (e.Delta > 0)
                 {
-                    Me.Location = new Point(Me.X - Me.Width / 20, Me.Y - Me.Width / 20 * Range.Height / Range.Width);
-                    Me.Size = new Size(Me.Width + Me.Width / 20 * 2, Me.Height + Me.Width / 20 * Range.Height / Range.Width * 2);
+                    NewBounds.Location = new Point(NewBounds.X - NewBounds.Width / 20, NewBounds.Y - NewBounds.Width / 20 * Range.Height / Range.Width);
+                    NewBounds.Size = new Size(NewBounds.Width + NewBounds.Width / 20 * 2, NewBounds.Height + NewBounds.Width / 20 * Range.Height / Range.Width * 2);
                 }
                 else if (e.Delta < 0)
                 {
-                    Me.Location = new Point(Me.X + Me.Width / 20, Me.Y + Me.Width / 20 * Range.Height / Range.Width);
-                    Me.Size = new Size(Me.Width - Me.Width / 20 * 2, Me.Height - Me.Width / 20 * Range.Height / Range.Width * 2);
+                    NewBounds.Location = new Point(NewBounds.X + NewBounds.Width / 20, NewBounds.Y + NewBounds.Width / 20 * Range.Height / Range.Width);
+                    NewBounds.Size = new Size(NewBounds.Width - NewBounds.Width / 20 * 2, NewBounds.Height - NewBounds.Width / 20 * Range.Height / Range.Width * 2);
                 }
             }
             else
             {
                 if (e.Delta > 0)
                 {
-                    Me.Location = new Point(Me.X - Me.Height / 20 * Range.Width / Range.Height, Me.Y - Me.Height / 20);
-                    Me.Size = new Size(Me.Width + Me.Height / 20 * Range.Width / Range.Height * 2, Me.Height + Me.Height / 20 * 2);
+                    NewBounds.Location = new Point(NewBounds.X - NewBounds.Height / 20 * Range.Width / Range.Height, NewBounds.Y - NewBounds.Height / 20);
+                    NewBounds.Size = new Size(NewBounds.Width + NewBounds.Height / 20 * Range.Width / Range.Height * 2, NewBounds.Height + NewBounds.Height / 20 * 2);
                 }
                 else if (e.Delta < 0)
                 {
-                    Me.Location = new Point(Me.X + Me.Height / 20 * Range.Width / Range.Height, Me.Y + Me.Height / 20);
-                    Me.Size = new Size(Me.Width - Me.Height / 20 * Range.Width / Range.Height * 2, Me.Height - Me.Height / 20 * 2);
+                    NewBounds.Location = new Point(NewBounds.X + NewBounds.Height / 20 * Range.Width / Range.Height, NewBounds.Y + NewBounds.Height / 20);
+                    NewBounds.Size = new Size(NewBounds.Width - NewBounds.Height / 20 * Range.Width / Range.Height * 2, NewBounds.Height - NewBounds.Height / 20 * 2);
                 }
             }
 
-            Me.Location = new Point(Math.Max(0, Math.Min(Screen.PrimaryScreen.WorkingArea.Width - Me.Width, Me.X)), Math.Max(0, Math.Min(Screen.PrimaryScreen.WorkingArea.Height - Me.Height, Me.Y)));
+            NewBounds.Location = new Point(Math.Max(0, Math.Min(Screen.PrimaryScreen.WorkingArea.Width - NewBounds.Width, NewBounds.X)), Math.Max(0, Math.Min(Screen.PrimaryScreen.WorkingArea.Height - NewBounds.Height, NewBounds.Y)));
+
+            Me.Bounds = NewBounds;
         }
 
         #endregion
