@@ -2,7 +2,7 @@
 Copyright © 2013-2018 chibayuki@foxmail.com
 
 五子棋
-Version 7.1.17000.5602.R16.180610-0000
+Version 7.1.17000.5602.R16.180611-0000
 
 This file is part of 五子棋
 
@@ -39,7 +39,7 @@ namespace WinFormApp
         private static readonly Int32 BuildNumber = new Version(Application.ProductVersion).Build; // 版本号。
         private static readonly Int32 BuildRevision = new Version(Application.ProductVersion).Revision; // 修订版本。
         private static readonly string LabString = "R16"; // 分支名。
-        private static readonly string BuildTime = "180610-0000"; // 编译时间。
+        private static readonly string BuildTime = "180611-0000"; // 编译时间。
 
         //
 
@@ -81,6 +81,10 @@ namespace WinFormApp
         #endregion
 
         #region 配置设置变量
+
+        private Int32 ElementSize = 40; // 元素边长。
+
+        //
 
         private enum ChessboardTypes { NULL = -1, Gomoku_15x15, Go_19x19, COUNT } // 棋盘类型枚举。
         private ChessboardTypes ChessboardType = ChessboardTypes.Gomoku_15x15; // 当前棋盘类型。
@@ -136,13 +140,9 @@ namespace WinFormApp
             }
         }
 
-        private Int32[,] ElementArray = new Int32[CAPACITY, CAPACITY]; // 元素矩阵。
+        private Int32[,] ElementMatrix = new Int32[CAPACITY, CAPACITY]; // 元素矩阵。
 
         private List<Point> ElementIndexList = new List<Point>(CAPACITY * CAPACITY); // 元素索引列表。
-
-        //
-
-        private Int32 ElementSize = 40; // 元素边长。
 
         #endregion
 
@@ -310,7 +310,7 @@ namespace WinFormApp
         private TimeSpan FreeTimeRemaining_White_Last = TimeSpan.Zero; // 上次游戏的白方剩余时长。
         private TimeSpan CountdownTimeRemaining_White_Last = TimeSpan.Zero; // 上次游戏的白方剩余时长。
 
-        private Int32[,] ElementArray_Last = new Int32[CAPACITY, CAPACITY]; // 上次游戏的元素矩阵。
+        private Int32[,] ElementMatrix_Last = new Int32[CAPACITY, CAPACITY]; // 上次游戏的元素矩阵。
 
         private List<Point> ElementIndexList_Last = new List<Point>(CAPACITY * CAPACITY); // 上次游戏的元素索引列表。
 
@@ -669,12 +669,12 @@ namespace WinFormApp
             {
                 ElementSize = Math.Max(1, Math.Min(Panel_Environment.Width / Range.Width, Panel_Environment.Height / Range.Height));
 
-                EAryBmpRect.Size = new Size(Math.Max(1, ElementSize * Range.Width), Math.Max(1, ElementSize * Range.Height));
-                EAryBmpRect.Location = new Point((Panel_Environment.Width - EAryBmpRect.Width) / 2, (Panel_Environment.Height - EAryBmpRect.Height) / 2);
+                EMatBmpRect.Size = new Size(Math.Max(1, ElementSize * Range.Width), Math.Max(1, ElementSize * Range.Height));
+                EMatBmpRect.Location = new Point((Panel_Environment.Width - EMatBmpRect.Width) / 2, (Panel_Environment.Height - EMatBmpRect.Height) / 2);
 
                 RepaintCurBmp();
 
-                ElementArray_RepresentAll();
+                ElementMatrix_RepresentAll();
             }
 
             if (Panel_FunctionArea.Visible && FunctionAreaTab == FunctionAreaTabs.Record)
@@ -1460,9 +1460,9 @@ namespace WinFormApp
                                     string StrVal = RegexUint.Replace(Fields[i++], string.Empty);
                                     E = Convert.ToInt32(StrVal);
 
-                                    if ((Index.X >= 0 && Index.X < Range.Width && Index.Y >= 0 && Index.Y < Range.Height) && (E == BLACK || E == WHITE))
+                                    if (ElementMatrix_IndexValid(Index) && (E == BLACK || E == WHITE))
                                     {
-                                        ElementArray_Last[Index.X, Index.Y] = E;
+                                        ElementMatrix_Last[Index.X, Index.Y] = E;
                                         ElementIndexList_Last.Add(Index);
                                     }
                                 }
@@ -1498,14 +1498,14 @@ namespace WinFormApp
 
             foreach (var V in ElementIndexList_Last)
             {
-                ElementArray_Last[V.X, V.Y] = 0;
+                ElementMatrix_Last[V.X, V.Y] = 0;
             }
 
             ElementIndexList_Last.Clear();
 
             foreach (var V in ElementIndexList)
             {
-                ElementArray_Last[V.X, V.Y] = ElementArray[V.X, V.Y];
+                ElementMatrix_Last[V.X, V.Y] = ElementMatrix_GetValue(V);
 
                 ElementIndexList_Last.Add(V);
             }
@@ -1530,11 +1530,11 @@ namespace WinFormApp
             Str += "<CountdownTimeRemaining_White>" + (Int64)CountdownTimeRemaining_White.TotalMilliseconds + "</CountdownTimeRemaining_White>";
 
             Str += "<Element>[";
-            for (int i = 0; i <= ElementIndexList.Count - 1; i++)
+            for (int i = 0; i < ElementIndexList.Count; i++)
             {
                 Point A = ElementIndexList[i];
 
-                Str += "(" + A.X + "," + A.Y + "," + ElementArray[A.X, A.Y] + ")";
+                Str += "(" + A.X + "," + A.Y + "," + ElementMatrix_GetValue(A) + ")";
             }
             Str += "]</Element>";
 
@@ -1564,7 +1564,7 @@ namespace WinFormApp
 
             foreach (var V in ElementIndexList_Last)
             {
-                ElementArray_Last[V.X, V.Y] = 0;
+                ElementMatrix_Last[V.X, V.Y] = 0;
             }
 
             ElementIndexList_Last.Clear();
@@ -1706,15 +1706,15 @@ namespace WinFormApp
 
         // 初始化。
 
-        private void ElementArray_Initialize()
+        private void ElementMatrix_Initialize()
         {
             //
             // 初始化。
             //
 
-            for (int i = 0; i <= ElementIndexList.Count - 1; i++)
+            for (int i = 0; i < ElementIndexList.Count; i++)
             {
-                ElementArray[ElementIndexList[i].X, ElementIndexList[i].Y] = 0;
+                ElementMatrix[ElementIndexList[i].X, ElementIndexList[i].Y] = 0;
             }
 
             ElementIndexList.Clear();
@@ -1722,7 +1722,65 @@ namespace WinFormApp
 
         // 索引。
 
-        private Point ElementArray_GetIndex(Point P)
+        private bool ElementMatrix_IndexValid(Point A)
+        {
+            //
+            // 检查指定的索引是否有效。A：索引。
+            //
+
+            try
+            {
+                return (A.X >= 0 && A.X < Range.Width && A.Y >= 0 && A.Y < Range.Height);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private Int32 ElementMatrix_GetValue(Point A)
+        {
+            //
+            // 获取元素矩阵指定的索引的元素的值。A：索引。
+            //
+
+            try
+            {
+                if (ElementMatrix_IndexValid(A))
+                {
+                    return ElementMatrix[A.X, A.Y];
+                }
+
+                return Int32.MinValue;
+            }
+            catch
+            {
+                return Int32.MinValue;
+            }
+        }
+
+        private Int32 ElementMatrix_GetValue(Int32 X, Int32 Y)
+        {
+            //
+            // 获取元素矩阵指定的索引的元素的值。X，Y：索引。
+            //
+
+            try
+            {
+                if (ElementMatrix_IndexValid(new Point(X, Y)))
+                {
+                    return ElementMatrix[X, Y];
+                }
+
+                return Int32.MinValue;
+            }
+            catch
+            {
+                return Int32.MinValue;
+            }
+        }
+
+        private Point ElementMatrix_GetIndex(Point P)
         {
             //
             // 获取绘图容器中的指定坐标所在元素的索引。P：坐标。
@@ -1730,10 +1788,10 @@ namespace WinFormApp
 
             try
             {
-                Point dP = new Point(P.X - EAryBmpRect.X, P.Y - EAryBmpRect.Y);
+                Point dP = new Point(P.X - EMatBmpRect.X, P.Y - EMatBmpRect.Y);
                 Point A = new Point((Int32)Math.Floor((double)dP.X / ElementSize), (Int32)Math.Floor((double)dP.Y / ElementSize));
 
-                if (A.X >= 0 && A.X < Range.Width && A.Y >= 0 && A.Y < Range.Height)
+                if (ElementMatrix_IndexValid(A))
                 {
                     return A;
                 }
@@ -1746,9 +1804,45 @@ namespace WinFormApp
             }
         }
 
+        // 添加与移除。
+
+        private void ElementMatrix_Add(Point A, Int32 E)
+        {
+            //
+            // 向元素矩阵添加一个元素。A：索引；E：元素的值。
+            //
+
+            if (E != 0 && ElementMatrix_IndexValid(A))
+            {
+                if (!ElementIndexList.Contains(A))
+                {
+                    ElementMatrix[A.X, A.Y] = E;
+
+                    ElementIndexList.Add(A);
+                }
+            }
+        }
+
+        private void ElementMatrix_RemoveAt(Point A)
+        {
+            //
+            // 从元素矩阵移除一个元素。A：索引。
+            //
+
+            if (ElementMatrix_IndexValid(A))
+            {
+                ElementMatrix[A.X, A.Y] = 0;
+
+                if (ElementIndexList.Contains(A))
+                {
+                    ElementIndexList.Remove(A);
+                }
+            }
+        }
+
         // 颜色。
 
-        private Color ElementArray_GetColor(Int32 E)
+        private Color ElementMatrix_GetColor(Int32 E)
         {
             //
             // 获取元素颜色。E：元素的值。
@@ -1780,57 +1874,21 @@ namespace WinFormApp
             }
         }
 
-        // 添加与移除。
-
-        private void ElementArray_Add(Point A, Int32 E)
-        {
-            //
-            // 向元素矩阵添加一个元素。A：索引；E：元素的值。
-            //
-
-            if (E != 0 && A.X >= 0 && A.X < CAPACITY && A.Y >= 0 && A.Y < CAPACITY)
-            {
-                if (!ElementIndexList.Contains(A))
-                {
-                    ElementArray[A.X, A.Y] = E;
-
-                    ElementIndexList.Add(A);
-                }
-            }
-        }
-
-        private void ElementArray_RemoveAt(Point A)
-        {
-            //
-            // 从元素矩阵移除一个元素。A：索引。
-            //
-
-            if (A.X >= 0 && A.X < CAPACITY && A.Y >= 0 && A.Y < CAPACITY)
-            {
-                ElementArray[A.X, A.Y] = 0;
-
-                if (ElementIndexList.Contains(A))
-                {
-                    ElementIndexList.Remove(A);
-                }
-            }
-        }
-
         // 绘图与呈现。
 
-        private Rectangle EAryBmpRect = new Rectangle(); // 元素矩阵位图区域（相对于绘图容器）。
+        private Rectangle EMatBmpRect = new Rectangle(); // 元素矩阵位图区域（相对于绘图容器）。
 
-        private Bitmap EAryBmp; // 元素矩阵位图。
+        private Bitmap EMatBmp; // 元素矩阵位图。
 
-        private Graphics EAryBmpGrap; // 元素矩阵位图绘图。
+        private Graphics EMatBmpGrap; // 元素矩阵位图绘图。
 
-        private void ElementArray_DrawAtPoint(Point A, bool PresentNow)
+        private void ElementMatrix_DrawAtPoint(Point A, bool PresentNow)
         {
             //
             // 在元素矩阵位图的指定索引处绘制一个元素。A：索引；PresentNow：是否立即呈现此元素，如果为 true，那么将在位图中绘制此元素，并在不重绘整个位图的情况下在容器中绘制此元素，如果为 false，那么将仅在位图中绘制此元素。
             //
 
-            if (A.X >= 0 && A.X < CAPACITY && A.Y >= 0 && A.Y < CAPACITY)
+            if (ElementMatrix_IndexValid(A))
             {
                 Rectangle BmpRect = new Rectangle(new Point(A.X * ElementSize, A.Y * ElementSize), new Size(ElementSize, ElementSize));
 
@@ -1992,7 +2050,7 @@ namespace WinFormApp
 
                 // 星位、禁手点、棋子：
 
-                Int32 E = ElementArray[A.X, A.Y];
+                Int32 E = ElementMatrix_GetValue(A);
 
                 if (E == 0)
                 {
@@ -2102,7 +2160,7 @@ namespace WinFormApp
                 {
                     Rectangle Rect_Cen = new Rectangle(new Point(BmpRect.Width / 24, BmpRect.Height / 24), new Size(Math.Max(1, BmpRect.Width * 11 / 12), Math.Max(1, BmpRect.Height * 11 / 12)));
 
-                    Color Cr_Cen = ElementArray_GetColor(E);
+                    Color Cr_Cen = ElementMatrix_GetColor(E);
 
                     if (E == BLACK)
                     {
@@ -2150,17 +2208,17 @@ namespace WinFormApp
 
                 if (Bmp != null)
                 {
-                    EAryBmpGrap.DrawImage(Bmp, BmpRect.Location);
+                    EMatBmpGrap.DrawImage(Bmp, BmpRect.Location);
 
                     if (PresentNow)
                     {
-                        Panel_Environment.CreateGraphics().DrawImage(Bmp, new Point(EAryBmpRect.X + BmpRect.X, EAryBmpRect.Y + BmpRect.Y));
+                        Panel_Environment.CreateGraphics().DrawImage(Bmp, new Point(EMatBmpRect.X + BmpRect.X, EMatBmpRect.Y + BmpRect.Y));
                     }
                 }
             }
         }
 
-        private void ElementArray_RepresentAll()
+        private void ElementMatrix_RepresentAll()
         {
             //
             // 更新并呈现元素矩阵包含的所有元素。
@@ -2168,22 +2226,22 @@ namespace WinFormApp
 
             if (Panel_Environment.Visible && (Panel_Environment.Width > 0 && Panel_Environment.Height > 0))
             {
-                if (EAryBmp != null)
+                if (EMatBmp != null)
                 {
-                    EAryBmp.Dispose();
+                    EMatBmp.Dispose();
                 }
 
-                EAryBmp = new Bitmap(Math.Max(1, EAryBmpRect.Width), Math.Max(1, EAryBmpRect.Height));
+                EMatBmp = new Bitmap(Math.Max(1, EMatBmpRect.Width), Math.Max(1, EMatBmpRect.Height));
 
-                EAryBmpGrap = Graphics.FromImage(EAryBmp);
+                EMatBmpGrap = Graphics.FromImage(EMatBmp);
 
                 if (AntiAlias)
                 {
-                    EAryBmpGrap.SmoothingMode = SmoothingMode.AntiAlias;
-                    EAryBmpGrap.TextRenderingHint = TextRenderingHint.AntiAlias;
+                    EMatBmpGrap.SmoothingMode = SmoothingMode.AntiAlias;
+                    EMatBmpGrap.TextRenderingHint = TextRenderingHint.AntiAlias;
                 }
 
-                EAryBmpGrap.Clear(GameUIBackColor_INC);
+                EMatBmpGrap.Clear(GameUIBackColor_INC);
 
                 //
 
@@ -2191,7 +2249,7 @@ namespace WinFormApp
                 {
                     for (int Y = 0; Y < Range.Height; Y++)
                     {
-                        ElementArray_DrawAtPoint(new Point(X, Y), false);
+                        ElementMatrix_DrawAtPoint(new Point(X, Y), false);
                     }
                 }
 
@@ -2199,16 +2257,16 @@ namespace WinFormApp
 
                 if (GameState != GameStates.Ongoing)
                 {
-                    EAryBmpGrap.FillRectangle(new SolidBrush(Color.FromArgb(128, Color.White)), new Rectangle(new Point(0, 0), EAryBmp.Size));
+                    EMatBmpGrap.FillRectangle(new SolidBrush(Color.FromArgb(128, Color.White)), new Rectangle(new Point(0, 0), EMatBmp.Size));
                 }
 
                 //
 
-                RepaintEAryBmp();
+                RepaintEMatBmp();
             }
         }
 
-        private void ElementArray_PresentAt(Point A)
+        private void ElementMatrix_PresentAt(Point A)
         {
             //
             // 呈现元素矩阵中指定的索引处的一个元素。A：索引。
@@ -2216,32 +2274,32 @@ namespace WinFormApp
 
             if (Panel_Environment.Visible && (Panel_Environment.Width > 0 && Panel_Environment.Height > 0))
             {
-                if (A.X >= 0 && A.X < Range.Width && A.Y >= 0 && A.Y < Range.Height)
+                if (ElementMatrix_IndexValid(A))
                 {
-                    ElementArray_DrawAtPoint(A, true);
+                    ElementMatrix_DrawAtPoint(A, true);
                 }
             }
         }
 
-        private void RepaintEAryBmp()
+        private void RepaintEMatBmp()
         {
             //
             // 重绘元素矩阵位图。
             //
 
-            if (EAryBmp != null)
+            if (EMatBmp != null)
             {
-                if (Panel_Environment.Width > EAryBmp.Width)
+                if (Panel_Environment.Width > EMatBmp.Width)
                 {
-                    Panel_Environment.CreateGraphics().FillRectangles(new SolidBrush(GameUIBackColor_DEC), new Rectangle[] { new Rectangle(new Point(0, 0), new Size((Panel_Environment.Width - EAryBmp.Width) / 2, Panel_Environment.Height)), new Rectangle(new Point(Panel_Environment.Width - (Panel_Environment.Width - EAryBmp.Width) / 2, 0), new Size((Panel_Environment.Width - EAryBmp.Width) / 2, Panel_Environment.Height)) });
+                    Panel_Environment.CreateGraphics().FillRectangles(new SolidBrush(GameUIBackColor_DEC), new Rectangle[] { new Rectangle(new Point(0, 0), new Size((Panel_Environment.Width - EMatBmp.Width) / 2, Panel_Environment.Height)), new Rectangle(new Point(Panel_Environment.Width - (Panel_Environment.Width - EMatBmp.Width) / 2, 0), new Size((Panel_Environment.Width - EMatBmp.Width) / 2, Panel_Environment.Height)) });
                 }
 
-                if (Panel_Environment.Height > EAryBmp.Height)
+                if (Panel_Environment.Height > EMatBmp.Height)
                 {
-                    Panel_Environment.CreateGraphics().FillRectangles(new SolidBrush(GameUIBackColor_DEC), new Rectangle[] { new Rectangle(new Point(0, 0), new Size(Panel_Environment.Width, (Panel_Environment.Height - EAryBmp.Height) / 2)), new Rectangle(new Point(0, Panel_Environment.Height - (Panel_Environment.Height - EAryBmp.Height) / 2), new Size(Panel_Environment.Width, (Panel_Environment.Height - EAryBmp.Height) / 2)) });
+                    Panel_Environment.CreateGraphics().FillRectangles(new SolidBrush(GameUIBackColor_DEC), new Rectangle[] { new Rectangle(new Point(0, 0), new Size(Panel_Environment.Width, (Panel_Environment.Height - EMatBmp.Height) / 2)), new Rectangle(new Point(0, Panel_Environment.Height - (Panel_Environment.Height - EMatBmp.Height) / 2), new Size(Panel_Environment.Width, (Panel_Environment.Height - EMatBmp.Height) / 2)) });
                 }
 
-                Panel_Environment.CreateGraphics().DrawImage(EAryBmp, EAryBmpRect);
+                Panel_Environment.CreateGraphics().DrawImage(EMatBmp, EMatBmpRect);
             }
         }
 
@@ -2251,45 +2309,45 @@ namespace WinFormApp
             // Panel_Environment 绘图。
             //
 
-            if (EAryBmp != null)
+            if (EMatBmp != null)
             {
-                if (Panel_Environment.Width > EAryBmp.Width)
+                if (Panel_Environment.Width > EMatBmp.Width)
                 {
-                    e.Graphics.FillRectangles(new SolidBrush(GameUIBackColor_DEC), new Rectangle[] { new Rectangle(new Point(0, 0), new Size((Panel_Environment.Width - EAryBmp.Width) / 2, Panel_Environment.Height)), new Rectangle(new Point(Panel_Environment.Width - (Panel_Environment.Width - EAryBmp.Width) / 2, 0), new Size((Panel_Environment.Width - EAryBmp.Width) / 2, Panel_Environment.Height)) });
+                    e.Graphics.FillRectangles(new SolidBrush(GameUIBackColor_DEC), new Rectangle[] { new Rectangle(new Point(0, 0), new Size((Panel_Environment.Width - EMatBmp.Width) / 2, Panel_Environment.Height)), new Rectangle(new Point(Panel_Environment.Width - (Panel_Environment.Width - EMatBmp.Width) / 2, 0), new Size((Panel_Environment.Width - EMatBmp.Width) / 2, Panel_Environment.Height)) });
                 }
 
-                if (Panel_Environment.Height > EAryBmp.Height)
+                if (Panel_Environment.Height > EMatBmp.Height)
                 {
-                    e.Graphics.FillRectangles(new SolidBrush(GameUIBackColor_DEC), new Rectangle[] { new Rectangle(new Point(0, 0), new Size(Panel_Environment.Width, (Panel_Environment.Height - EAryBmp.Height) / 2)), new Rectangle(new Point(0, Panel_Environment.Height - (Panel_Environment.Height - EAryBmp.Height) / 2), new Size(Panel_Environment.Width, (Panel_Environment.Height - EAryBmp.Height) / 2)) });
+                    e.Graphics.FillRectangles(new SolidBrush(GameUIBackColor_DEC), new Rectangle[] { new Rectangle(new Point(0, 0), new Size(Panel_Environment.Width, (Panel_Environment.Height - EMatBmp.Height) / 2)), new Rectangle(new Point(0, Panel_Environment.Height - (Panel_Environment.Height - EMatBmp.Height) / 2), new Size(Panel_Environment.Width, (Panel_Environment.Height - EMatBmp.Height) / 2)) });
                 }
 
-                e.Graphics.DrawImage(EAryBmp, EAryBmpRect);
+                e.Graphics.DrawImage(EMatBmp, EMatBmpRect);
             }
         }
 
         #endregion
 
-        #region 元素矩阵高级功能
+        #region 元素矩阵扩展功能
 
         // 逻辑添加。
 
-        private void ElementArray_LogicalAppend(Point A, Int32 E)
+        private void ElementMatrix_LogicalAppend(Point A, Int32 E)
         {
             //
             // 向元素矩阵逻辑添加一个元素，并进行判定。A：索引；E：元素的值。
             //
 
-            if (E != 0 && A.X >= 0 && A.X < Range.Width && A.Y >= 0 && A.Y < Range.Height)
+            if (E != 0 && ElementMatrix_IndexValid(A))
             {
                 if (!ElementIndexList.Contains(A))
                 {
-                    ElementArray_Add(A, E);
+                    ElementMatrix_Add(A, E);
 
-                    ElementArray_PresentAt(A);
+                    ElementMatrix_PresentAt(A);
 
                     if (StepTagNum > 0 && ElementIndexList.Count > StepTagNum)
                     {
-                        ElementArray_PresentAt(ElementIndexList[ElementIndexList.Count - StepTagNum - 1]);
+                        ElementMatrix_PresentAt(ElementIndexList[ElementIndexList.Count - StepTagNum - 1]);
                     }
 
                     Judgement();
@@ -4250,8 +4308,8 @@ namespace WinFormApp
             {
                 if (ElementIndexList.Count > 0)
                 {
-                    StatsInfo SI_Black = GetStatisticalInformationOfArray(ElementArray, Range, BLACK);
-                    StatsInfo SI_White = GetStatisticalInformationOfArray(ElementArray, Range, WHITE);
+                    StatsInfo SI_Black = GetStatisticalInformationOfArray(ElementMatrix, Range, BLACK);
+                    StatsInfo SI_White = GetStatisticalInformationOfArray(ElementMatrix, Range, WHITE);
 
                     // 开局禁手判定：
 
@@ -4361,7 +4419,7 @@ namespace WinFormApp
                         if (GS == GameStates.Ongoing)
                         {
                             Point ALast = ElementIndexList[ElementIndexList.Count - 1];
-                            Int32 ELast = ElementArray[ALast.X, ALast.Y];
+                            Int32 ELast = ElementMatrix_GetValue(ALast);
 
                             if (ELast == BLACK)
                             {
@@ -4415,16 +4473,16 @@ namespace WinFormApp
 
                     if (GS == GameStates.Ongoing)
                     {
-                        if (GetZeroCountOfArray(ElementArray, Range) == 0)
+                        if (GetZeroCountOfArray(ElementMatrix, Range) == 0)
                         {
                             GS = GameStates.Draw;
                         }
                         else
                         {
-                            List<Point> ZL = GetCertainIndexListOfArray(ElementArray, Range, 0);
+                            List<Point> ZL = GetCertainIndexListOfArray(ElementMatrix, Range, 0);
 
-                            Int32[,] Ary_Blk = GetCopyOfArray(ElementArray);
-                            Int32[,] Ary_Whi = GetCopyOfArray(ElementArray);
+                            Int32[,] Ary_Blk = GetCopyOfArray(ElementMatrix);
+                            Int32[,] Ary_Whi = GetCopyOfArray(ElementMatrix);
 
                             foreach (var V in ZL)
                             {
@@ -4452,14 +4510,14 @@ namespace WinFormApp
 
                         if (GS == GameStates.Ongoing)
                         {
-                            BanIDList = GetBanIndexList(ElementArray, Range);
+                            BanIDList = GetBanIndexList(ElementMatrix, Range);
                         }
 
                         foreach (var V in OldBanIDList)
                         {
                             if (!BanIDList.Contains(V))
                             {
-                                ElementArray_PresentAt(V);
+                                ElementMatrix_PresentAt(V);
                             }
                         }
 
@@ -4467,7 +4525,7 @@ namespace WinFormApp
                         {
                             if (!OldBanIDList.Contains(V))
                             {
-                                ElementArray_PresentAt(V);
+                                ElementMatrix_PresentAt(V);
                             }
                         }
                     }
@@ -4680,17 +4738,17 @@ namespace WinFormApp
             // 落子。A：索引；AsAI：是否以 AI 身份落子。
             //
 
-            if (A.X >= 0 && A.X < Range.Width && A.Y >= 0 && A.Y < Range.Height)
+            if (ElementMatrix_IndexValid(A))
             {
-                if (ElementArray[A.X, A.Y] == 0)
+                if (ElementMatrix_GetValue(A) == 0)
                 {
                     if (AsAI)
                     {
-                        ElementArray_LogicalAppend(A, ChessColor_AI);
+                        ElementMatrix_LogicalAppend(A, ChessColor_AI);
                     }
                     else
                     {
-                        ElementArray_LogicalAppend(A, ChessColor_User);
+                        ElementMatrix_LogicalAppend(A, ChessColor_User);
 
                         if (GameState == GameStates.Ongoing)
                         {
@@ -4749,7 +4807,7 @@ namespace WinFormApp
 
                 ZeroIndexList.Clear();
 
-                List<Point> _ZeroIndexList = GetCertainIndexListOfArray(ElementArray, Range, 0);
+                List<Point> _ZeroIndexList = GetCertainIndexListOfArray(ElementMatrix, Range, 0);
 
                 while (_ZeroIndexList.Count > 0)
                 {
@@ -4856,8 +4914,8 @@ namespace WinFormApp
                         SrchRslt SR = new SrchRslt();
                         SR.Index = A;
 
-                        Int32[,] Ary_AI = GetCopyOfArray(ElementArray);
-                        Int32[,] Ary_User = GetCopyOfArray(ElementArray);
+                        Int32[,] Ary_AI = GetCopyOfArray(ElementMatrix);
+                        Int32[,] Ary_User = GetCopyOfArray(ElementMatrix);
 
                         ArrayLogicalAppend(Ary_AI, Range, A, ChessColor_AI);
                         ArrayLogicalAppend(Ary_User, Range, A, ChessColor_User);
@@ -5716,7 +5774,7 @@ namespace WinFormApp
                 {
                     ChessClockStop();
 
-                    ElementArray_RepresentAll();
+                    ElementMatrix_RepresentAll();
 
                     if (SaveRecord)
                     {
@@ -5838,14 +5896,14 @@ namespace WinFormApp
                         FreeTimeRemaining_White = FreeTimeRemaining_White_Last;
                         CountdownTimeRemaining_White = CountdownTimeRemaining_White_Last;
 
-                        ElementArray_Initialize();
+                        ElementMatrix_Initialize();
 
                         foreach (var V in ElementIndexList_Last)
                         {
-                            ElementArray_Add(V, ElementArray_Last[V.X, V.Y]);
+                            ElementMatrix_Add(V, ElementMatrix_Last[V.X, V.Y]);
                         }
 
-                        ElementArray_RepresentAll();
+                        ElementMatrix_RepresentAll();
 
                         Judgement();
 
@@ -5887,9 +5945,9 @@ namespace WinFormApp
 
                         ThisGameTime = TimeSpan.Zero;
 
-                        ElementArray_Initialize();
+                        ElementMatrix_Initialize();
 
-                        ElementArray_RepresentAll();
+                        ElementMatrix_RepresentAll();
 
                         ExchangeChessColor();
 
@@ -6070,7 +6128,7 @@ namespace WinFormApp
 
             //
 
-            ElementArray_Initialize();
+            ElementMatrix_Initialize();
 
             //
 
@@ -6105,14 +6163,14 @@ namespace WinFormApp
 
             ElementSize = Math.Max(1, Math.Min(Panel_Environment.Width / Range.Width, Panel_Environment.Height / Range.Height));
 
-            EAryBmpRect.Size = new Size(Math.Max(1, ElementSize * Range.Width), Math.Max(1, ElementSize * Range.Height));
-            EAryBmpRect.Location = new Point((Panel_Environment.Width - EAryBmpRect.Width) / 2, (Panel_Environment.Height - EAryBmpRect.Height) / 2);
+            EMatBmpRect.Size = new Size(Math.Max(1, ElementSize * Range.Width), Math.Max(1, ElementSize * Range.Height));
+            EMatBmpRect.Location = new Point((Panel_Environment.Width - EMatBmpRect.Width) / 2, (Panel_Environment.Height - EMatBmpRect.Height) / 2);
 
             //
 
             RepaintCurBmp();
 
-            ElementArray_RepresentAll();
+            ElementMatrix_RepresentAll();
         }
 
         private void ExitGameUI()
@@ -6130,7 +6188,7 @@ namespace WinFormApp
 
             //
 
-            ElementArray_Initialize();
+            ElementMatrix_Initialize();
 
             //
 
@@ -6164,11 +6222,11 @@ namespace WinFormApp
             {
                 if (CurrentPlayer == Roles.User)
                 {
-                    Point A = ElementArray_GetIndex(Com.Geometry.GetCursorPositionOfControl(Panel_Environment));
+                    Point A = ElementMatrix_GetIndex(Com.Geometry.GetCursorPositionOfControl(Panel_Environment));
 
                     if (UseBalanceBreaker && ElementIndexList.Count == 0)
                     {
-                        if (A.X >= 0 && A.X < CAPACITY && A.Y >= 0 && A.Y < CAPACITY)
+                        if (ElementMatrix_IndexValid(A))
                         {
                             A = Center;
                         }
@@ -6182,7 +6240,7 @@ namespace WinFormApp
                     {
                         Point LastPointedIndex = GameUIPointedIndex;
 
-                        if ((A.X >= 0 && A.X < CAPACITY && A.Y >= 0 && A.Y < CAPACITY) && ElementArray[A.X, A.Y] == 0)
+                        if (ElementMatrix_IndexValid(A) && ElementMatrix_GetValue(A) == 0)
                         {
                             GameUIPointedIndex = A;
                         }
@@ -6191,8 +6249,15 @@ namespace WinFormApp
                             GameUIPointedIndex = new Point(-1, -1);
                         }
 
-                        ElementArray_PresentAt(LastPointedIndex);
-                        ElementArray_PresentAt(GameUIPointedIndex);
+                        if (ElementMatrix_IndexValid(LastPointedIndex) && ElementMatrix_GetValue(LastPointedIndex) == 0)
+                        {
+                            ElementMatrix_PresentAt(LastPointedIndex);
+                        }
+
+                        if (ElementMatrix_IndexValid(GameUIPointedIndex) && ElementMatrix_GetValue(GameUIPointedIndex) == 0)
+                        {
+                            ElementMatrix_PresentAt(GameUIPointedIndex);
+                        }
                     }
                 }
             }
@@ -6211,8 +6276,10 @@ namespace WinFormApp
                     Point LastPointedIndex = GameUIPointedIndex;
                     GameUIPointedIndex = new Point(-1, -1);
 
-                    ElementArray_PresentAt(LastPointedIndex);
-                    ElementArray_PresentAt(GameUIPointedIndex);
+                    if (ElementMatrix_IndexValid(LastPointedIndex) && ElementMatrix_GetValue(LastPointedIndex) == 0)
+                    {
+                        ElementMatrix_PresentAt(LastPointedIndex);
+                    }
                 }
             }
         }
@@ -6227,7 +6294,7 @@ namespace WinFormApp
             {
                 if (CurrentPlayer == Roles.User)
                 {
-                    Point A = ElementArray_GetIndex(Com.Geometry.GetCursorPositionOfControl(Panel_Environment));
+                    Point A = ElementMatrix_GetIndex(Com.Geometry.GetCursorPositionOfControl(Panel_Environment));
 
                     if (UseBalanceBreaker && ElementIndexList.Count == 0)
                     {
@@ -6460,8 +6527,8 @@ namespace WinFormApp
             RegionSize_L = new SizeF(Rect_Black_Polygon.Width + Margin_Chess_L + Rect_Black_Chess.Width + Margin_Name_L + Math.Max(StringRect_UserName_Black.Width, StringRect_TimeRemaining_Black.Width) + Margin_Result_L + StringRect_WinningState_Black.Width, 0);
             RegionSize_R = new SizeF(Rect_White_Polygon.Width + Margin_Chess_L + Rect_White_Chess.Width + Margin_Name_L + Math.Max(StringRect_UserName_White.Width, StringRect_TimeRemaining_White.Width) + Margin_Result_L + StringRect_WinningState_White.Width, 0);
 
-            RegionRect.Size = new SizeF(Math.Max(RegionSize_L.Width + RegionSize_R.Width, Math.Min(EAryBmpRect.Width, Panel_Interrupt.Left - EAryBmpRect.X)), Panel_Current.Height);
-            RegionRect.Location = new PointF(Math.Max(0, Math.Min(EAryBmpRect.X + (EAryBmpRect.Width - RegionRect.Width) / 2, Panel_Interrupt.Left - RegionRect.Width)), 0);
+            RegionRect.Size = new SizeF(Math.Max(RegionSize_L.Width + RegionSize_R.Width, Math.Min(EMatBmpRect.Width, Panel_Interrupt.Left - EMatBmpRect.X)), Panel_Current.Height);
+            RegionRect.Location = new PointF(Math.Max(0, Math.Min(EMatBmpRect.X + (EMatBmpRect.Width - RegionRect.Width) / 2, Panel_Interrupt.Left - RegionRect.Width)), 0);
 
             Rect_Black_Polygon.Location = new PointF(RegionRect.X, 9);
             Rect_Black_Chess.Location = new PointF(Rect_Black_Polygon.Right + Margin_Chess_L, 5);
