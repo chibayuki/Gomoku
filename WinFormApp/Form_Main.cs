@@ -2,7 +2,7 @@
 Copyright © 2013-2018 chibayuki@foxmail.com
 
 五子棋
-Version 7.1.17000.5602.R16.180617-0000
+Version 7.1.17000.5602.R16.180618-0000
 
 This file is part of 五子棋
 
@@ -39,7 +39,7 @@ namespace WinFormApp
         private static readonly Int32 BuildNumber = new Version(Application.ProductVersion).Build; // 版本号。
         private static readonly Int32 BuildRevision = new Version(Application.ProductVersion).Revision; // 修订版本。
         private static readonly string LabString = "R16"; // 分支名。
-        private static readonly string BuildTime = "180617-0000"; // 编译时间。
+        private static readonly string BuildTime = "180618-0000"; // 编译时间。
 
         //
 
@@ -950,11 +950,11 @@ namespace WinFormApp
                         {
                             Version NewestVersion = OldVersionList_Copy[0];
 
-                            foreach (var V in OldVersionList_Copy)
+                            foreach (Version Ver in OldVersionList_Copy)
                             {
-                                if (NewestVersion <= V)
+                                if (NewestVersion <= Ver)
                                 {
-                                    NewestVersion = V;
+                                    NewestVersion = Ver;
                                 }
                             }
 
@@ -996,9 +996,9 @@ namespace WinFormApp
             {
                 if (OldVersionList.Count > 0)
                 {
-                    foreach (var V in OldVersionList)
+                    foreach (Version Ver in OldVersionList)
                     {
-                        string Dir = RootDir_Product + "\\" + V.Build + "." + V.Revision;
+                        string Dir = RootDir_Product + "\\" + Ver.Build + "." + Ver.Revision;
 
                         if (Directory.Exists(Dir))
                         {
@@ -1050,11 +1050,11 @@ namespace WinFormApp
                     {
                         string SubStr = Com.Text.GetIntervalString(Cfg, "<ChessboardType>", "</ChessboardType>", false, false);
 
-                        foreach (var V in Enum.GetValues(typeof(ChessboardTypes)))
+                        foreach (object Obj in Enum.GetValues(typeof(ChessboardTypes)))
                         {
-                            if (SubStr.Trim().ToUpper() == V.ToString().ToUpper())
+                            if (SubStr.Trim().ToUpper() == Obj.ToString().ToUpper())
                             {
-                                ChessboardType = (ChessboardTypes)V;
+                                ChessboardType = (ChessboardTypes)Obj;
 
                                 break;
                             }
@@ -1066,11 +1066,11 @@ namespace WinFormApp
                     {
                         string SubStr = Com.Text.GetIntervalString(Cfg, "<ChessboardStyle>", "</ChessboardStyle>", false, false);
 
-                        foreach (var V in Enum.GetValues(typeof(ChessboardStyles)))
+                        foreach (object Obj in Enum.GetValues(typeof(ChessboardStyles)))
                         {
-                            if (SubStr.Trim().ToUpper() == V.ToString().ToUpper())
+                            if (SubStr.Trim().ToUpper() == Obj.ToString().ToUpper())
                             {
-                                ChessboardStyle = (ChessboardStyles)V;
+                                ChessboardStyle = (ChessboardStyles)Obj;
 
                                 break;
                             }
@@ -1111,11 +1111,11 @@ namespace WinFormApp
                     {
                         string SubStr = Com.Text.GetIntervalString(Cfg, "<Theme>", "</Theme>", false, false);
 
-                        foreach (var V in Enum.GetValues(typeof(Com.WinForm.Theme)))
+                        foreach (object Obj in Enum.GetValues(typeof(Com.WinForm.Theme)))
                         {
-                            if (SubStr.Trim().ToUpper() == V.ToString().ToUpper())
+                            if (SubStr.Trim().ToUpper() == Obj.ToString().ToUpper())
                             {
-                                Me.Theme = (Com.WinForm.Theme)V;
+                                Me.Theme = (Com.WinForm.Theme)Obj;
 
                                 break;
                             }
@@ -1355,11 +1355,11 @@ namespace WinFormApp
                     {
                         string SubStr = Com.Text.GetIntervalString(Str, "<ChessboardType>", "</ChessboardType>", false, false);
 
-                        foreach (var V in Enum.GetValues(typeof(ChessboardTypes)))
+                        foreach (object Obj in Enum.GetValues(typeof(ChessboardTypes)))
                         {
-                            if (SubStr.Trim().ToUpper() == V.ToString().ToUpper())
+                            if (SubStr.Trim().ToUpper() == Obj.ToString().ToUpper())
                             {
-                                ChessboardType_Last = (ChessboardTypes)V;
+                                ChessboardType_Last = (ChessboardTypes)Obj;
 
                                 break;
                             }
@@ -1510,18 +1510,18 @@ namespace WinFormApp
             FreeTimeRemaining_White_Last = FreeTimeRemaining_White;
             CountdownTimeRemaining_White_Last = CountdownTimeRemaining_White;
 
-            foreach (var V in ElementIndexList_Last)
+            foreach (Point A in ElementIndexList_Last)
             {
-                ElementMatrix_Last[V.X, V.Y] = 0;
+                ElementMatrix_Last[A.X, A.Y] = 0;
             }
 
             ElementIndexList_Last.Clear();
 
-            foreach (var V in ElementIndexList)
+            foreach (Point A in ElementIndexList)
             {
-                ElementMatrix_Last[V.X, V.Y] = ElementMatrix_GetValue(V);
+                ElementMatrix_Last[A.X, A.Y] = ElementMatrix_GetValue(A);
 
-                ElementIndexList_Last.Add(V);
+                ElementIndexList_Last.Add(A);
             }
 
             //
@@ -1576,9 +1576,9 @@ namespace WinFormApp
             // 擦除上次游戏。
             //
 
-            foreach (var V in ElementIndexList_Last)
+            foreach (Point A in ElementIndexList_Last)
             {
-                ElementMatrix_Last[V.X, V.Y] = 0;
+                ElementMatrix_Last[A.X, A.Y] = 0;
             }
 
             ElementIndexList_Last.Clear();
@@ -2693,11 +2693,11 @@ namespace WinFormApp
                         {
                             List<Point> AL = new List<Point>(IDAry.Length);
 
-                            foreach (var V in IDAry)
+                            foreach (Point A in IDAry)
                             {
-                                if (Array[V.X, V.Y] == Value)
+                                if (Array[A.X, A.Y] == Value)
                                 {
-                                    AL.Add(V);
+                                    AL.Add(A);
                                 }
                             }
 
@@ -2847,11 +2847,11 @@ namespace WinFormApp
                         {
                             List<Point> AL = new List<Point>(IDAry.Length);
 
-                            foreach (var V in IDAry)
+                            foreach (Point A in IDAry)
                             {
-                                if (Array[V.X, V.Y] == Value)
+                                if (Array[A.X, A.Y] == Value)
                                 {
-                                    AL.Add(V);
+                                    AL.Add(A);
                                 }
                             }
 
@@ -3003,11 +3003,11 @@ namespace WinFormApp
                         {
                             List<Point> AL = new List<Point>(IDAry.Length);
 
-                            foreach (var V in IDAry)
+                            foreach (Point A in IDAry)
                             {
-                                if (Array[V.X, V.Y] == Value)
+                                if (Array[A.X, A.Y] == Value)
                                 {
-                                    AL.Add(V);
+                                    AL.Add(A);
                                 }
                             }
 
@@ -3159,11 +3159,11 @@ namespace WinFormApp
                         {
                             List<Point> AL = new List<Point>(IDAry.Length);
 
-                            foreach (var V in IDAry)
+                            foreach (Point A in IDAry)
                             {
-                                if (Array[V.X, V.Y] == Value)
+                                if (Array[A.X, A.Y] == Value)
                                 {
-                                    AL.Add(V);
+                                    AL.Add(A);
                                 }
                             }
 
@@ -3254,15 +3254,15 @@ namespace WinFormApp
 
                 // 去重：
 
-                for (int i = 0; i <= SI.Chain_4A.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_4A.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_4A.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_4A.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_4A[i])
+                        foreach (Point A in SI.Chain_4A[i])
                         {
-                            if (SI.Chain_4A[j].Contains(V))
+                            if (SI.Chain_4A[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3281,15 +3281,15 @@ namespace WinFormApp
 
                 //
 
-                for (int i = 0; i <= SI.Chain_4S.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_4S.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_4S.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_4S.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_4S[i])
+                        foreach (Point A in SI.Chain_4S[i])
                         {
-                            if (SI.Chain_4S[j].Contains(V))
+                            if (SI.Chain_4S[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3306,15 +3306,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_Long.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_Long.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_4S[i])
+                        foreach (Point A in SI.Chain_4S[i])
                         {
-                            if (SI.Chain_Long[j].Contains(V))
+                            if (SI.Chain_Long[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3331,15 +3331,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_5.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_5.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_4S[i])
+                        foreach (Point A in SI.Chain_4S[i])
                         {
-                            if (SI.Chain_5[j].Contains(V))
+                            if (SI.Chain_5[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3358,15 +3358,15 @@ namespace WinFormApp
 
                 //
 
-                for (int i = 0; i <= SI.Chain_3A.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_3A.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_3A.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_3A.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_3A[i])
+                        foreach (Point A in SI.Chain_3A[i])
                         {
-                            if (SI.Chain_3A[j].Contains(V))
+                            if (SI.Chain_3A[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3383,15 +3383,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_3A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_4S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_4S.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_3A[i])
+                        foreach (Point A in SI.Chain_3A[i])
                         {
-                            if (SI.Chain_4S[j].Contains(V))
+                            if (SI.Chain_4S[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3410,15 +3410,15 @@ namespace WinFormApp
 
                 //
 
-                for (int i = 0; i <= SI.Chain_3S.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_3S.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_3S.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_3S.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_3S[i])
+                        foreach (Point A in SI.Chain_3S[i])
                         {
-                            if (SI.Chain_3S[j].Contains(V))
+                            if (SI.Chain_3S[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3435,15 +3435,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_3S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_Long.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_Long.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_3S[i])
+                        foreach (Point A in SI.Chain_3S[i])
                         {
-                            if (SI.Chain_Long[j].Contains(V))
+                            if (SI.Chain_Long[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3460,15 +3460,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_3S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_5.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_5.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_3S[i])
+                        foreach (Point A in SI.Chain_3S[i])
                         {
-                            if (SI.Chain_5[j].Contains(V))
+                            if (SI.Chain_5[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3485,15 +3485,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_3S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_4A.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_4A.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_3S[i])
+                        foreach (Point A in SI.Chain_3S[i])
                         {
-                            if (SI.Chain_4A[j].Contains(V))
+                            if (SI.Chain_4A[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3510,15 +3510,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_3S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_4S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_4S.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_3S[i])
+                        foreach (Point A in SI.Chain_3S[i])
                         {
-                            if (SI.Chain_4S[j].Contains(V))
+                            if (SI.Chain_4S[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3537,15 +3537,15 @@ namespace WinFormApp
 
                 //
 
-                for (int i = 0; i <= SI.Chain_2A.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_2A.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_2A.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_2A.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2A[i])
+                        foreach (Point A in SI.Chain_2A[i])
                         {
-                            if (SI.Chain_2A[j].Contains(V))
+                            if (SI.Chain_2A[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3562,15 +3562,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_2A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_4S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_4S.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2A[i])
+                        foreach (Point A in SI.Chain_2A[i])
                         {
-                            if (SI.Chain_4S[j].Contains(V))
+                            if (SI.Chain_4S[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3587,15 +3587,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_2A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_3A.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_3A.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2A[i])
+                        foreach (Point A in SI.Chain_2A[i])
                         {
-                            if (SI.Chain_3A[j].Contains(V))
+                            if (SI.Chain_3A[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3612,15 +3612,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_2A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_3S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_3S.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2A[i])
+                        foreach (Point A in SI.Chain_2A[i])
                         {
-                            if (SI.Chain_3S[j].Contains(V))
+                            if (SI.Chain_3S[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3639,15 +3639,15 @@ namespace WinFormApp
 
                 //
 
-                for (int i = 0; i <= SI.Chain_2S.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_2S.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_2S.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_2S.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2S[i])
+                        foreach (Point A in SI.Chain_2S[i])
                         {
-                            if (SI.Chain_2S[j].Contains(V))
+                            if (SI.Chain_2S[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3664,15 +3664,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_2S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_Long.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_Long.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2S[i])
+                        foreach (Point A in SI.Chain_2S[i])
                         {
-                            if (SI.Chain_Long[j].Contains(V))
+                            if (SI.Chain_Long[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3689,15 +3689,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_2S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_5.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_5.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2S[i])
+                        foreach (Point A in SI.Chain_2S[i])
                         {
-                            if (SI.Chain_5[j].Contains(V))
+                            if (SI.Chain_5[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3714,15 +3714,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_2S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_4A.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_4A.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2S[i])
+                        foreach (Point A in SI.Chain_2S[i])
                         {
-                            if (SI.Chain_4A[j].Contains(V))
+                            if (SI.Chain_4A[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3739,15 +3739,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_2S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_4S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_4S.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2S[i])
+                        foreach (Point A in SI.Chain_2S[i])
                         {
-                            if (SI.Chain_4S[j].Contains(V))
+                            if (SI.Chain_4S[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3764,15 +3764,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_2S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_3A.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_3A.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2S[i])
+                        foreach (Point A in SI.Chain_2S[i])
                         {
-                            if (SI.Chain_3A[j].Contains(V))
+                            if (SI.Chain_3A[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3789,15 +3789,15 @@ namespace WinFormApp
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_2S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_3S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_3S.Count; j++)
                     {
                         Int32 Cnt = 0;
 
-                        foreach (var V in SI.Chain_2S[i])
+                        foreach (Point A in SI.Chain_2S[i])
                         {
-                            if (SI.Chain_3S[j].Contains(V))
+                            if (SI.Chain_3S[j].Contains(A))
                             {
                                 Cnt++;
                             }
@@ -3816,304 +3816,304 @@ namespace WinFormApp
 
                 // 交点：
 
-                for (int i = 0; i <= SI.Chain_4A.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_4A.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_4A.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_4A.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4A[i])
+                        foreach (Point A in SI.Chain_4A[i])
                         {
-                            if (SI.Chain_4A[j].Contains(V))
+                            if (SI.Chain_4A[j].Contains(A))
                             {
-                                SI.CrossIDList_4_4.Add(V);
-                                SI.CrossIDList_4A_Any.Add(V);
-                                SI.CrossIDList_4A_4A.Add(V);
+                                SI.CrossIDList_4_4.Add(A);
+                                SI.CrossIDList_4A_Any.Add(A);
+                                SI.CrossIDList_4A_4A.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_4S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_4S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4A[i])
+                        foreach (Point A in SI.Chain_4A[i])
                         {
-                            if (SI.Chain_4S[j].Contains(V))
+                            if (SI.Chain_4S[j].Contains(A))
                             {
-                                SI.CrossIDList_4_4.Add(V);
-                                SI.CrossIDList_4A_Any.Add(V);
-                                SI.CrossIDList_4A_4S.Add(V);
+                                SI.CrossIDList_4_4.Add(A);
+                                SI.CrossIDList_4A_Any.Add(A);
+                                SI.CrossIDList_4A_4S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_3A.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_3A.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4A[i])
+                        foreach (Point A in SI.Chain_4A[i])
                         {
-                            if (SI.Chain_3A[j].Contains(V))
+                            if (SI.Chain_3A[j].Contains(A))
                             {
-                                SI.CrossIDList_4A_Any.Add(V);
-                                SI.CrossIDList_4A_3A.Add(V);
+                                SI.CrossIDList_4A_Any.Add(A);
+                                SI.CrossIDList_4A_3A.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_3S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_3S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4A[i])
+                        foreach (Point A in SI.Chain_4A[i])
                         {
-                            if (SI.Chain_3S[j].Contains(V))
+                            if (SI.Chain_3S[j].Contains(A))
                             {
-                                SI.CrossIDList_4A_Any.Add(V);
-                                SI.CrossIDList_4A_3S.Add(V);
+                                SI.CrossIDList_4A_Any.Add(A);
+                                SI.CrossIDList_4A_3S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_2A.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_2A.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4A[i])
+                        foreach (Point A in SI.Chain_4A[i])
                         {
-                            if (SI.Chain_2A[j].Contains(V))
+                            if (SI.Chain_2A[j].Contains(A))
                             {
-                                SI.CrossIDList_4A_Any.Add(V);
-                                SI.CrossIDList_4A_2A.Add(V);
+                                SI.CrossIDList_4A_Any.Add(A);
+                                SI.CrossIDList_4A_2A.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_2S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_2S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4A[i])
+                        foreach (Point A in SI.Chain_4A[i])
                         {
-                            if (SI.Chain_2S[j].Contains(V))
+                            if (SI.Chain_2S[j].Contains(A))
                             {
-                                SI.CrossIDList_4A_Any.Add(V);
-                                SI.CrossIDList_4A_2S.Add(V);
+                                SI.CrossIDList_4A_Any.Add(A);
+                                SI.CrossIDList_4A_2S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4S.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_4S.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_4S.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_4S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4S[i])
+                        foreach (Point A in SI.Chain_4S[i])
                         {
-                            if (SI.Chain_4S[j].Contains(V))
+                            if (SI.Chain_4S[j].Contains(A))
                             {
-                                SI.CrossIDList_4_4.Add(V);
-                                SI.CrossIDList_4S_4S.Add(V);
+                                SI.CrossIDList_4_4.Add(A);
+                                SI.CrossIDList_4S_4S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_3A.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_3A.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4S[i])
+                        foreach (Point A in SI.Chain_4S[i])
                         {
-                            if (SI.Chain_3A[j].Contains(V))
+                            if (SI.Chain_3A[j].Contains(A))
                             {
-                                SI.CrossIDList_4S_3A.Add(V);
+                                SI.CrossIDList_4S_3A.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_3S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_3S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4S[i])
+                        foreach (Point A in SI.Chain_4S[i])
                         {
-                            if (SI.Chain_3S[j].Contains(V))
+                            if (SI.Chain_3S[j].Contains(A))
                             {
-                                SI.CrossIDList_4S_3S.Add(V);
+                                SI.CrossIDList_4S_3S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_2A.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_2A.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4S[i])
+                        foreach (Point A in SI.Chain_4S[i])
                         {
-                            if (SI.Chain_2A[j].Contains(V))
+                            if (SI.Chain_2A[j].Contains(A))
                             {
-                                SI.CrossIDList_4S_2A.Add(V);
+                                SI.CrossIDList_4S_2A.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_4S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_4S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_2S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_2S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_4S[i])
+                        foreach (Point A in SI.Chain_4S[i])
                         {
-                            if (SI.Chain_2S[j].Contains(V))
+                            if (SI.Chain_2S[j].Contains(A))
                             {
-                                SI.CrossIDList_4S_2S.Add(V);
+                                SI.CrossIDList_4S_2S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3A.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_3A.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_3A.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_3A.Count; j++)
                     {
-                        foreach (var V in SI.Chain_3A[i])
+                        foreach (Point A in SI.Chain_3A[i])
                         {
-                            if (SI.Chain_3A[j].Contains(V))
+                            if (SI.Chain_3A[j].Contains(A))
                             {
-                                SI.CrossIDList_3A_3A.Add(V);
+                                SI.CrossIDList_3A_3A.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_3A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_3S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_3S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_3A[i])
+                        foreach (Point A in SI.Chain_3A[i])
                         {
-                            if (SI.Chain_3S[j].Contains(V))
+                            if (SI.Chain_3S[j].Contains(A))
                             {
-                                SI.CrossIDList_3A_3S.Add(V);
+                                SI.CrossIDList_3A_3S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_3A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_2A.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_2A.Count; j++)
                     {
-                        foreach (var V in SI.Chain_3A[i])
+                        foreach (Point A in SI.Chain_3A[i])
                         {
-                            if (SI.Chain_2A[j].Contains(V))
+                            if (SI.Chain_2A[j].Contains(A))
                             {
-                                SI.CrossIDList_3A_2A.Add(V);
+                                SI.CrossIDList_3A_2A.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_3A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_2S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_2S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_3A[i])
+                        foreach (Point A in SI.Chain_3A[i])
                         {
-                            if (SI.Chain_2S[j].Contains(V))
+                            if (SI.Chain_2S[j].Contains(A))
                             {
-                                SI.CrossIDList_3A_2S.Add(V);
+                                SI.CrossIDList_3A_2S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3S.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_3S.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_3S.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_3S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_3S[i])
+                        foreach (Point A in SI.Chain_3S[i])
                         {
-                            if (SI.Chain_3S[j].Contains(V))
+                            if (SI.Chain_3S[j].Contains(A))
                             {
-                                SI.CrossIDList_3S_3S.Add(V);
+                                SI.CrossIDList_3S_3S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_3S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_2A.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_2A.Count; j++)
                     {
-                        foreach (var V in SI.Chain_3S[i])
+                        foreach (Point A in SI.Chain_3S[i])
                         {
-                            if (SI.Chain_2A[j].Contains(V))
+                            if (SI.Chain_2A[j].Contains(A))
                             {
-                                SI.CrossIDList_3S_2A.Add(V);
+                                SI.CrossIDList_3S_2A.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_3S.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_3S.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_2S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_2S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_3S[i])
+                        foreach (Point A in SI.Chain_3S[i])
                         {
-                            if (SI.Chain_2S[j].Contains(V))
+                            if (SI.Chain_2S[j].Contains(A))
                             {
-                                SI.CrossIDList_3S_2S.Add(V);
+                                SI.CrossIDList_3S_2S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2A.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_2A.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_2A.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_2A.Count; j++)
                     {
-                        foreach (var V in SI.Chain_2A[i])
+                        foreach (Point A in SI.Chain_2A[i])
                         {
-                            if (SI.Chain_2A[j].Contains(V))
+                            if (SI.Chain_2A[j].Contains(A))
                             {
-                                SI.CrossIDList_2A_2A.Add(V);
+                                SI.CrossIDList_2A_2A.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2A.Count - 1; i++)
+                for (int i = 0; i < SI.Chain_2A.Count; i++)
                 {
-                    for (int j = 0; j <= SI.Chain_2S.Count - 1; j++)
+                    for (int j = 0; j < SI.Chain_2S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_2A[i])
+                        foreach (Point A in SI.Chain_2A[i])
                         {
-                            if (SI.Chain_2S[j].Contains(V))
+                            if (SI.Chain_2S[j].Contains(A))
                             {
-                                SI.CrossIDList_2A_2S.Add(V);
+                                SI.CrossIDList_2A_2S.Add(A);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i <= SI.Chain_2S.Count - 2; i++)
+                for (int i = 0; i < SI.Chain_2S.Count - 1; i++)
                 {
-                    for (int j = i + 1; j <= SI.Chain_2S.Count - 1; j++)
+                    for (int j = i + 1; j < SI.Chain_2S.Count; j++)
                     {
-                        foreach (var V in SI.Chain_2S[i])
+                        foreach (Point A in SI.Chain_2S[i])
                         {
-                            if (SI.Chain_2S[j].Contains(V))
+                            if (SI.Chain_2S[j].Contains(A))
                             {
-                                SI.CrossIDList_2S_2S.Add(V);
+                                SI.CrossIDList_2S_2S.Add(A);
                             }
                         }
                     }
@@ -4139,9 +4139,9 @@ namespace WinFormApp
 
             try
             {
-                foreach (var V in ChainList)
+                foreach (Point[] IDAry in ChainList)
                 {
-                    if (V.Contains(A))
+                    if (IDAry.Contains(A))
                     {
                         return true;
                     }
@@ -4222,17 +4222,17 @@ namespace WinFormApp
 
                     List<Point> BIL = new List<Point>(ZL.Count);
 
-                    foreach (var V in ZL)
+                    foreach (Point A in ZL)
                     {
                         Int32[,] Ary = GetCopyOfArray(Array);
 
-                        ArrayLogicalAppend(Ary, Cap, V, BLACK);
+                        ArrayLogicalAppend(Ary, Cap, A, BLACK);
 
                         StatsInfo SI_Bk = GetStatisticalInformationOfArray(Ary, Cap, BLACK);
 
-                        if (!Legality(BLACK, SI_Bk, V))
+                        if (!Legality(BLACK, SI_Bk, A))
                         {
-                            BIL.Add(V);
+                            BIL.Add(A);
                         }
                     }
 
@@ -4364,9 +4364,9 @@ namespace WinFormApp
                             {
                                 GS = GameStates.WhiteWin;
 
-                                foreach (var V in SI_Black.Chain_Long)
+                                foreach (Point[] IDAry in SI_Black.Chain_Long)
                                 {
-                                    foreach (var A in V)
+                                    foreach (Point A in IDAry)
                                     {
                                         JdgBasisIDList.Add(A);
                                     }
@@ -4383,9 +4383,9 @@ namespace WinFormApp
                         {
                             GS = GameStates.WhiteWin;
 
-                            foreach (var V in SI_White.Chain_FIR)
+                            foreach (Point[] IDAry in SI_White.Chain_FIR)
                             {
-                                foreach (var A in V)
+                                foreach (Point A in IDAry)
                                 {
                                     JdgBasisIDList.Add(A);
                                 }
@@ -4399,9 +4399,9 @@ namespace WinFormApp
                                 {
                                     GS = GameStates.BlackWin;
 
-                                    foreach (var V in SI_Black.Chain_5)
+                                    foreach (Point[] IDAry in SI_Black.Chain_5)
                                     {
-                                        foreach (var A in V)
+                                        foreach (Point A in IDAry)
                                         {
                                             JdgBasisIDList.Add(A);
                                         }
@@ -4414,9 +4414,9 @@ namespace WinFormApp
                                 {
                                     GS = GameStates.BlackWin;
 
-                                    foreach (var V in SI_Black.Chain_FIR)
+                                    foreach (Point[] IDAry in SI_Black.Chain_FIR)
                                     {
-                                        foreach (var A in V)
+                                        foreach (Point A in IDAry)
                                         {
                                             JdgBasisIDList.Add(A);
                                         }
@@ -4441,22 +4441,22 @@ namespace WinFormApp
                                 {
                                     GS = GameStates.WhiteWin;
 
-                                    foreach (var V in SI_Black.Chain_4A)
+                                    foreach (Point[] IDAry in SI_Black.Chain_4A)
                                     {
-                                        if (V.Contains(ALast))
+                                        if (IDAry.Contains(ALast))
                                         {
-                                            foreach (var A in V)
+                                            foreach (Point A in IDAry)
                                             {
                                                 JdgBasisIDList.Add(A);
                                             }
                                         }
                                     }
 
-                                    foreach (var V in SI_Black.Chain_4S)
+                                    foreach (Point[] IDAry in SI_Black.Chain_4S)
                                     {
-                                        if (V.Contains(ALast))
+                                        if (IDAry.Contains(ALast))
                                         {
-                                            foreach (var A in V)
+                                            foreach (Point A in IDAry)
                                             {
                                                 JdgBasisIDList.Add(A);
                                             }
@@ -4468,11 +4468,11 @@ namespace WinFormApp
                                 {
                                     GS = GameStates.WhiteWin;
 
-                                    foreach (var V in SI_Black.Chain_3A)
+                                    foreach (Point[] IDAry in SI_Black.Chain_3A)
                                     {
-                                        if (V.Contains(ALast))
+                                        if (IDAry.Contains(ALast))
                                         {
-                                            foreach (var A in V)
+                                            foreach (Point A in IDAry)
                                             {
                                                 JdgBasisIDList.Add(A);
                                             }
@@ -4498,10 +4498,10 @@ namespace WinFormApp
                             Int32[,] Ary_Blk = GetCopyOfArray(ElementMatrix);
                             Int32[,] Ary_Whi = GetCopyOfArray(ElementMatrix);
 
-                            foreach (var V in ZL)
+                            foreach (Point A in ZL)
                             {
-                                ArrayLogicalAppend(Ary_Blk, Range, V, BLACK);
-                                ArrayLogicalAppend(Ary_Whi, Range, V, WHITE);
+                                ArrayLogicalAppend(Ary_Blk, Range, A, BLACK);
+                                ArrayLogicalAppend(Ary_Whi, Range, A, WHITE);
                             }
 
                             StatsInfo SI_Blk = GetStatisticalInformationOfArray(Ary_Blk, Range, BLACK);
@@ -4527,19 +4527,19 @@ namespace WinFormApp
                             BanIDList = GetBanIndexList(ElementMatrix, Range);
                         }
 
-                        foreach (var V in OldBanIDList)
+                        foreach (Point A in OldBanIDList)
                         {
-                            if (!BanIDList.Contains(V))
+                            if (!BanIDList.Contains(A))
                             {
-                                ElementMatrix_PresentAt(V);
+                                ElementMatrix_PresentAt(A);
                             }
                         }
 
-                        foreach (var V in BanIDList)
+                        foreach (Point A in BanIDList)
                         {
-                            if (!OldBanIDList.Contains(V))
+                            if (!OldBanIDList.Contains(A))
                             {
-                                ElementMatrix_PresentAt(V);
+                                ElementMatrix_PresentAt(A);
                             }
                         }
                     }
@@ -5063,19 +5063,19 @@ namespace WinFormApp
 
                                             Point ToFIRID = new Point();
 
-                                            foreach (var V in NextIDList)
+                                            foreach (Point _A in NextIDList)
                                             {
                                                 Int32[,] _Ary_AI = GetCopyOfArray(Ary_AI);
 
-                                                ArrayLogicalAppend(_Ary_AI, Range, V, ChessColor_AI);
+                                                ArrayLogicalAppend(_Ary_AI, Range, _A, ChessColor_AI);
 
                                                 StatsInfo _SI_AI = GetStatisticalInformationOfArray(_Ary_AI, Range, ChessColor_AI);
 
-                                                _F_AI = Legality(ChessColor_AI, _SI_AI, V);
+                                                _F_AI = Legality(ChessColor_AI, _SI_AI, _A);
 
-                                                if (_F_AI && IndexIsInChainList(V, _SI_AI.Chain_FIR))
+                                                if (_F_AI && IndexIsInChainList(_A, _SI_AI.Chain_FIR))
                                                 {
-                                                    ToFIRID = V;
+                                                    ToFIRID = _A;
 
                                                     break;
                                                 }
@@ -5148,19 +5148,19 @@ namespace WinFormApp
 
                                             Point ToFIRID = new Point();
 
-                                            foreach (var V in NextIDList)
+                                            foreach (Point _A in NextIDList)
                                             {
                                                 Int32[,] _Ary_User = GetCopyOfArray(Ary_User);
 
-                                                ArrayLogicalAppend(_Ary_User, Range, V, ChessColor_User);
+                                                ArrayLogicalAppend(_Ary_User, Range, _A, ChessColor_User);
 
                                                 StatsInfo _SI_User = GetStatisticalInformationOfArray(_Ary_User, Range, ChessColor_User);
 
-                                                _F_User = Legality(ChessColor_User, _SI_User, V);
+                                                _F_User = Legality(ChessColor_User, _SI_User, _A);
 
-                                                if (_F_User && IndexIsInChainList(V, _SI_User.Chain_FIR))
+                                                if (_F_User && IndexIsInChainList(_A, _SI_User.Chain_FIR))
                                                 {
-                                                    ToFIRID = V;
+                                                    ToFIRID = _A;
 
                                                     break;
                                                 }
@@ -5233,33 +5233,33 @@ namespace WinFormApp
 
                                             List<Point> To4IDList = new List<Point>(NextIDList.Count);
 
-                                            foreach (var V in NextIDList)
+                                            foreach (Point _A in NextIDList)
                                             {
                                                 Int32[,] _Ary_AI = GetCopyOfArray(Ary_AI);
 
-                                                ArrayLogicalAppend(_Ary_AI, Range, V, ChessColor_AI);
+                                                ArrayLogicalAppend(_Ary_AI, Range, _A, ChessColor_AI);
 
                                                 StatsInfo _SI_AI = GetStatisticalInformationOfArray(_Ary_AI, Range, ChessColor_AI);
 
-                                                bool _F_AI = Legality(ChessColor_AI, _SI_AI, V);
+                                                bool _F_AI = Legality(ChessColor_AI, _SI_AI, _A);
 
-                                                if (_F_AI && (IndexIsInChainList(V, _SI_AI.Chain_4A) || IndexIsInChainList(V, _SI_AI.Chain_4S)))
+                                                if (_F_AI && (IndexIsInChainList(_A, _SI_AI.Chain_4A) || IndexIsInChainList(_A, _SI_AI.Chain_4S)))
                                                 {
-                                                    To4IDList.Add(V);
+                                                    To4IDList.Add(_A);
                                                 }
                                             }
 
                                             if (To4IDList.Count > 0)
                                             {
-                                                foreach (var V in To4IDList)
+                                                foreach (Point _A in To4IDList)
                                                 {
                                                     Int32[,] _Ary_User = GetCopyOfArray(Ary_AI);
 
-                                                    ArrayLogicalAppend(_Ary_User, Range, V, ChessColor_User);
+                                                    ArrayLogicalAppend(_Ary_User, Range, _A, ChessColor_User);
 
                                                     StatsInfo _SI_User = GetStatisticalInformationOfArray(_Ary_User, Range, ChessColor_User);
 
-                                                    bool _F_User = Legality(ChessColor_User, _SI_User, V);
+                                                    bool _F_User = Legality(ChessColor_User, _SI_User, _A);
 
                                                     if (!_F_User)
                                                     {
@@ -5322,33 +5322,33 @@ namespace WinFormApp
 
                                             List<Point> To4IDList = new List<Point>(NextIDList.Count);
 
-                                            foreach (var V in NextIDList)
+                                            foreach (Point _A in NextIDList)
                                             {
                                                 Int32[,] _Ary_User = GetCopyOfArray(Ary_User);
 
-                                                ArrayLogicalAppend(_Ary_User, Range, V, ChessColor_User);
+                                                ArrayLogicalAppend(_Ary_User, Range, _A, ChessColor_User);
 
                                                 StatsInfo _SI_User = GetStatisticalInformationOfArray(_Ary_User, Range, ChessColor_User);
 
-                                                bool _F_User = Legality(ChessColor_User, _SI_User, V);
+                                                bool _F_User = Legality(ChessColor_User, _SI_User, _A);
 
-                                                if (_F_User && (IndexIsInChainList(V, _SI_User.Chain_4A) || IndexIsInChainList(V, _SI_User.Chain_4S)))
+                                                if (_F_User && (IndexIsInChainList(_A, _SI_User.Chain_4A) || IndexIsInChainList(_A, _SI_User.Chain_4S)))
                                                 {
-                                                    To4IDList.Add(V);
+                                                    To4IDList.Add(_A);
                                                 }
                                             }
 
                                             if (To4IDList.Count > 0)
                                             {
-                                                foreach (var V in To4IDList)
+                                                foreach (Point _A in To4IDList)
                                                 {
                                                     Int32[,] _Ary_AI = GetCopyOfArray(Ary_User);
 
-                                                    ArrayLogicalAppend(_Ary_AI, Range, V, ChessColor_AI);
+                                                    ArrayLogicalAppend(_Ary_AI, Range, _A, ChessColor_AI);
 
                                                     StatsInfo _SI_AI = GetStatisticalInformationOfArray(_Ary_AI, Range, ChessColor_AI);
 
-                                                    bool _F_AI = Legality(ChessColor_AI, _SI_AI, V);
+                                                    bool _F_AI = Legality(ChessColor_AI, _SI_AI, _A);
 
                                                     if (!_F_AI)
                                                     {
@@ -5421,20 +5421,20 @@ namespace WinFormApp
 
                                         List<Point> UserNextIDList = new List<Point>(AntiIDList.Count);
 
-                                        foreach (var V in AntiIDList)
+                                        foreach (Point _A in AntiIDList)
                                         {
                                             Int32[,] _Ary_User = GetCopyOfArray(Ary_AI);
 
-                                            ArrayLogicalAppend(_Ary_User, Range, V, ChessColor_User);
+                                            ArrayLogicalAppend(_Ary_User, Range, _A, ChessColor_User);
 
                                             StatsInfo _SI_User = GetStatisticalInformationOfArray(_Ary_User, Range, ChessColor_User);
                                             StatsInfo _SI_AI = GetStatisticalInformationOfArray(_Ary_User, Range, ChessColor_AI);
 
-                                            bool _F_User = Legality(ChessColor_User, _SI_User, V);
+                                            bool _F_User = Legality(ChessColor_User, _SI_User, _A);
 
                                             if (_F_User && (!IndexIsInChainList(A, _SI_AI.Chain_4S) && !IndexIsInChainList(A, _SI_AI.Chain_3A)))
                                             {
-                                                UserNextIDList.Add(V);
+                                                UserNextIDList.Add(_A);
                                             }
                                         }
 
@@ -5442,11 +5442,11 @@ namespace WinFormApp
                                         {
                                             bool F_N = true;
 
-                                            foreach (var V_N in UserNextIDList)
+                                            foreach (Point A_N in UserNextIDList)
                                             {
                                                 Int32[,] _Ary_User = GetCopyOfArray(Ary_AI);
 
-                                                ArrayLogicalAppend(_Ary_User, Range, V_N, ChessColor_User);
+                                                ArrayLogicalAppend(_Ary_User, Range, A_N, ChessColor_User);
 
                                                 List<Point> ZeroIDList = new List<Point>(80);
 
@@ -5463,17 +5463,17 @@ namespace WinFormApp
 
                                                 bool F_Z = false;
 
-                                                foreach (var V_Z in ZeroIDList)
+                                                foreach (Point A_Z in ZeroIDList)
                                                 {
                                                     Int32[,] _Ary_AI = GetCopyOfArray(_Ary_User);
 
-                                                    ArrayLogicalAppend(_Ary_AI, Range, V_Z, ChessColor_AI);
+                                                    ArrayLogicalAppend(_Ary_AI, Range, A_Z, ChessColor_AI);
 
                                                     StatsInfo _SI_AI = GetStatisticalInformationOfArray(_Ary_AI, Range, ChessColor_AI);
 
-                                                    bool _F_AI = Legality(ChessColor_AI, _SI_AI, V_Z);
+                                                    bool _F_AI = Legality(ChessColor_AI, _SI_AI, A_Z);
 
-                                                    if (_F_AI && (_SI_AI.CrossIDList_4A_Any.Contains(V_Z) || _SI_AI.CrossIDList_4S_4S.Contains(V_Z) || _SI_AI.CrossIDList_4S_3A.Contains(V_Z) || _SI_AI.CrossIDList_3A_3A.Contains(V_Z)))
+                                                    if (_F_AI && (_SI_AI.CrossIDList_4A_Any.Contains(A_Z) || _SI_AI.CrossIDList_4S_4S.Contains(A_Z) || _SI_AI.CrossIDList_4S_3A.Contains(A_Z) || _SI_AI.CrossIDList_3A_3A.Contains(A_Z)))
                                                     {
                                                         F_Z = true;
 
@@ -5541,20 +5541,20 @@ namespace WinFormApp
 
                                         List<Point> AINextIDList = new List<Point>(AntiIDList.Count);
 
-                                        foreach (var V in AntiIDList)
+                                        foreach (Point _A in AntiIDList)
                                         {
                                             Int32[,] _Ary_AI = GetCopyOfArray(Ary_User);
 
-                                            ArrayLogicalAppend(_Ary_AI, Range, V, ChessColor_AI);
+                                            ArrayLogicalAppend(_Ary_AI, Range, _A, ChessColor_AI);
 
                                             StatsInfo _SI_AI = GetStatisticalInformationOfArray(_Ary_AI, Range, ChessColor_AI);
                                             StatsInfo _SI_User = GetStatisticalInformationOfArray(_Ary_AI, Range, ChessColor_User);
 
-                                            bool _F_AI = Legality(ChessColor_AI, _SI_AI, V);
+                                            bool _F_AI = Legality(ChessColor_AI, _SI_AI, _A);
 
                                             if (_F_AI && (!IndexIsInChainList(A, _SI_User.Chain_4S) && !IndexIsInChainList(A, _SI_User.Chain_3A)))
                                             {
-                                                AINextIDList.Add(V);
+                                                AINextIDList.Add(_A);
                                             }
                                         }
 
@@ -5562,11 +5562,11 @@ namespace WinFormApp
                                         {
                                             bool F_N = true;
 
-                                            foreach (var V_N in AINextIDList)
+                                            foreach (Point A_N in AINextIDList)
                                             {
                                                 Int32[,] _Ary_AI = GetCopyOfArray(Ary_User);
 
-                                                ArrayLogicalAppend(_Ary_AI, Range, V_N, ChessColor_AI);
+                                                ArrayLogicalAppend(_Ary_AI, Range, A_N, ChessColor_AI);
 
                                                 List<Point> ZeroIDList = new List<Point>(80);
 
@@ -5583,17 +5583,17 @@ namespace WinFormApp
 
                                                 bool F_Z = false;
 
-                                                foreach (var V_Z in ZeroIDList)
+                                                foreach (Point A_Z in ZeroIDList)
                                                 {
                                                     Int32[,] _Ary_User = GetCopyOfArray(_Ary_AI);
 
-                                                    ArrayLogicalAppend(_Ary_User, Range, V_Z, ChessColor_User);
+                                                    ArrayLogicalAppend(_Ary_User, Range, A_Z, ChessColor_User);
 
                                                     StatsInfo _SI_User = GetStatisticalInformationOfArray(_Ary_User, Range, ChessColor_User);
 
-                                                    bool _F_User = Legality(ChessColor_User, _SI_User, V_Z);
+                                                    bool _F_User = Legality(ChessColor_User, _SI_User, A_Z);
 
-                                                    if (_F_User && (_SI_User.CrossIDList_4A_Any.Contains(V_Z) || _SI_User.CrossIDList_4S_4S.Contains(V_Z) || _SI_User.CrossIDList_4S_3A.Contains(V_Z) || _SI_User.CrossIDList_3A_3A.Contains(V_Z)))
+                                                    if (_F_User && (_SI_User.CrossIDList_4A_Any.Contains(A_Z) || _SI_User.CrossIDList_4S_4S.Contains(A_Z) || _SI_User.CrossIDList_4S_3A.Contains(A_Z) || _SI_User.CrossIDList_3A_3A.Contains(A_Z)))
                                                     {
                                                         F_Z = true;
 
@@ -5912,9 +5912,9 @@ namespace WinFormApp
 
                         ElementMatrix_Initialize();
 
-                        foreach (var V in ElementIndexList_Last)
+                        foreach (Point A in ElementIndexList_Last)
                         {
-                            ElementMatrix_Add(V, ElementMatrix_Last[V.X, V.Y]);
+                            ElementMatrix_Add(A, ElementMatrix_Last[A.X, A.Y]);
                         }
 
                         ElementMatrix_RepresentAll();
@@ -6627,9 +6627,9 @@ namespace WinFormApp
             {
                 Panel_Current.CreateGraphics().DrawImage(CurBmp, new Point(0, 0));
 
-                foreach (var V in Panel_Current.Controls)
+                foreach (object Obj in Panel_Current.Controls)
                 {
-                    ((Control)V).Refresh();
+                    ((Control)Obj).Refresh();
                 }
             }
         }
@@ -6752,11 +6752,11 @@ namespace WinFormApp
 
                     Panel_FunctionAreaTab.AutoScroll = false;
 
-                    foreach (var V in Panel_FunctionAreaTab.Controls)
+                    foreach (object Obj in Panel_FunctionAreaTab.Controls)
                     {
-                        if (V is Panel)
+                        if (Obj is Panel)
                         {
-                            Panel Pnl = V as Panel;
+                            Panel Pnl = Obj as Panel;
 
                             Pnl.Location = new Point(0, 0);
                         }
