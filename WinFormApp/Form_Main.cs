@@ -1,12 +1,12 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-Copyright © 2013-2018 chibayuki@foxmail.com
+Copyright © 2018 chibayuki@foxmail.com
 
-五子棋
-Version 7.1.17000.5602.R16.180618-0000
+五子棋 (Gomoku)
+Version 7.1.17000.7785.R16.180707-1700
 
-This file is part of 五子棋
+This file is part of "五子棋" (Gomoku)
 
-五子棋 is released under the GPLv3 license
+"五子棋" (Gomoku) is released under the GPLv3 license
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -39,7 +39,7 @@ namespace WinFormApp
         private static readonly Int32 BuildNumber = new Version(Application.ProductVersion).Build; // 版本号。
         private static readonly Int32 BuildRevision = new Version(Application.ProductVersion).Revision; // 修订版本。
         private static readonly string LabString = "R16"; // 分支名。
-        private static readonly string BuildTime = "180618-0000"; // 编译时间。
+        private static readonly string BuildTime = "180707-1700"; // 编译时间。
 
         //
 
@@ -69,8 +69,8 @@ namespace WinFormApp
             new Version(7, 1, 17000, 5136),
             new Version(7, 1, 17000, 5378),
             new Version(7, 1, 17000, 5417),
-            new Version(7, 1, 17000, 5443),/*
-            new Version(7, 1, 17000, 5602)*/
+            new Version(7, 1, 17000, 5443),
+            new Version(7, 1, 17000, 5602)
         };
 
         //
