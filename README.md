@@ -1,4 +1,5 @@
-# 五子棋
+# 五子棋 / Gomoku
+基于Com的棋类游戏 / A board game based on Com.
 
-### License
-五子棋 is released under [GPLv3](WinFormApp/LicenseInfo/GPLv3.txt).
+### 许可 / License
+五子棋基于[GPLv3](WinFormApp/LicenseInfo/GPLv3.txt)发布 / Gomoku is released under [GPLv3](WinFormApp/LicenseInfo/GPLv3.txt).
