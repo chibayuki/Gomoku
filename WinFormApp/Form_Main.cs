@@ -2,7 +2,7 @@
 Copyright © 2018 chibayuki@foxmail.com
 
 五子棋 (Gomoku)
-Version 7.1.17000.7785.R16.180707-1700
+Version 7.1.17000.7785.R17.180924-0000
 
 This file is part of "五子棋" (Gomoku)
 
@@ -32,14 +32,14 @@ namespace WinFormApp
         #region 版本信息
 
         private static readonly string ApplicationName = Application.ProductName; // 程序名。
-        private static readonly string ApplicationEdition = "7.1.16"; // 程序版本。
+        private static readonly string ApplicationEdition = "7.1.17"; // 程序版本。
 
         private static readonly Int32 MajorVersion = new Version(Application.ProductVersion).Major; // 主版本。
         private static readonly Int32 MinorVersion = new Version(Application.ProductVersion).Minor; // 副版本。
         private static readonly Int32 BuildNumber = new Version(Application.ProductVersion).Build; // 版本号。
         private static readonly Int32 BuildRevision = new Version(Application.ProductVersion).Revision; // 修订版本。
-        private static readonly string LabString = "R16"; // 分支名。
-        private static readonly string BuildTime = "180707-1700"; // 编译时间。
+        private static readonly string LabString = "R17"; // 分支名。
+        private static readonly string BuildTime = "180924-0000"; // 编译时间。
 
         //
 
@@ -70,7 +70,8 @@ namespace WinFormApp
             new Version(7, 1, 17000, 5378),
             new Version(7, 1, 17000, 5417),
             new Version(7, 1, 17000, 5443),
-            new Version(7, 1, 17000, 5602)
+            new Version(7, 1, 17000, 5602),/*
+            new Version(7, 1, 17000, 7785)*/
         };
 
         //
@@ -394,23 +395,6 @@ namespace WinFormApp
             get
             {
                 return Me;
-            }
-        }
-
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                const int WS_MINIMIZEBOX = 0x00020000;
-
-                CreateParams CP = base.CreateParams;
-
-                if (Me != null && Me.FormStyle != Com.WinForm.FormStyle.Dialog)
-                {
-                    CP.Style = CP.Style | WS_MINIMIZEBOX;
-                }
-
-                return CP;
             }
         }
 
@@ -816,7 +800,7 @@ namespace WinFormApp
             {
                 Pen P = new Pen(Me.RecommendColors.Border_DEC.ToColor(), 1);
                 Control Ctrl = PictureBox_Overview;
-                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width, Ctrl.Top + Ctrl.Height / 2));
+                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width - Ctrl.Left, Ctrl.Top + Ctrl.Height / 2));
                 P.Dispose();
             }
 
@@ -837,7 +821,7 @@ namespace WinFormApp
             {
                 Pen P = new Pen(Me.RecommendColors.Border_DEC.ToColor(), 1);
                 Control Ctrl = PictureBox_GameTime;
-                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width, Ctrl.Top + Ctrl.Height / 2));
+                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width - Ctrl.Left, Ctrl.Top + Ctrl.Height / 2));
                 P.Dispose();
             }
         }
@@ -854,7 +838,7 @@ namespace WinFormApp
             {
                 Pen P = new Pen(Me.RecommendColors.Border_DEC.ToColor(), 1);
                 Control Ctrl = Label_Chessboard;
-                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width, Ctrl.Top + Ctrl.Height / 2));
+                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width - Ctrl.Left, Ctrl.Top + Ctrl.Height / 2));
                 P.Dispose();
             }
         }
@@ -871,7 +855,7 @@ namespace WinFormApp
             {
                 Pen P = new Pen(Me.RecommendColors.Border_DEC.ToColor(), 1);
                 Control Ctrl = Label_BalanceBreaker;
-                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width, Ctrl.Top + Ctrl.Height / 2));
+                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width - Ctrl.Left, Ctrl.Top + Ctrl.Height / 2));
                 P.Dispose();
             }
         }
@@ -888,7 +872,7 @@ namespace WinFormApp
             {
                 Pen P = new Pen(Me.RecommendColors.Border_DEC.ToColor(), 1);
                 Control Ctrl = Label_StepTag;
-                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width, Ctrl.Top + Ctrl.Height / 2));
+                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width - Ctrl.Left, Ctrl.Top + Ctrl.Height / 2));
                 P.Dispose();
             }
         }
@@ -905,7 +889,7 @@ namespace WinFormApp
             {
                 Pen P = new Pen(Me.RecommendColors.Border_DEC.ToColor(), 1);
                 Control Ctrl = Label_ThemeColor;
-                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width, Ctrl.Top + Ctrl.Height / 2));
+                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width - Ctrl.Left, Ctrl.Top + Ctrl.Height / 2));
                 P.Dispose();
             }
         }
@@ -922,7 +906,7 @@ namespace WinFormApp
             {
                 Pen P = new Pen(Me.RecommendColors.Border_DEC.ToColor(), 1);
                 Control Ctrl = Label_AntiAlias;
-                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width, Ctrl.Top + Ctrl.Height / 2));
+                e.Graphics.DrawLine(P, new Point(Ctrl.Right, Ctrl.Top + Ctrl.Height / 2), new Point(Cntr.Width - Ctrl.Left, Ctrl.Top + Ctrl.Height / 2));
                 P.Dispose();
             }
         }
@@ -6228,7 +6212,10 @@ namespace WinFormApp
             // 鼠标经过 Panel_Environment。
             //
 
-            Panel_Environment.Focus();
+            if (Me.IsActive)
+            {
+                Panel_Environment.Focus();
+            }
 
             //
 
