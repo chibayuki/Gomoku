@@ -2,7 +2,7 @@
 Copyright © 2018 chibayuki@foxmail.com
 
 五子棋 (Gomoku)
-Version 7.1.17000.7785.R17.180924-0000
+Version 7.1.17000.7813.R17.181002-1400
 
 This file is part of "五子棋" (Gomoku)
 
@@ -39,7 +39,7 @@ namespace WinFormApp
         private static readonly Int32 BuildNumber = new Version(Application.ProductVersion).Build; // 版本号。
         private static readonly Int32 BuildRevision = new Version(Application.ProductVersion).Revision; // 修订版本。
         private static readonly string LabString = "R17"; // 分支名。
-        private static readonly string BuildTime = "180924-0000"; // 编译时间。
+        private static readonly string BuildTime = "181002-1400"; // 编译时间。
 
         //
 
@@ -70,8 +70,8 @@ namespace WinFormApp
             new Version(7, 1, 17000, 5378),
             new Version(7, 1, 17000, 5417),
             new Version(7, 1, 17000, 5443),
-            new Version(7, 1, 17000, 5602),/*
-            new Version(7, 1, 17000, 7785)*/
+            new Version(7, 1, 17000, 5602),
+            new Version(7, 1, 17000, 7785)
         };
 
         //
