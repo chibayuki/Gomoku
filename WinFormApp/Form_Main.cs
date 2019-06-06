@@ -1,8 +1,8 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-Copyright © 2018 chibayuki@foxmail.com
+Copyright © 2019 chibayuki@foxmail.com
 
 五子棋 (Gomoku)
-Version 7.1.17000.7813.R17.181002-1400
+Version 7.1.17000.7822.R18.190525-1400
 
 This file is part of "五子棋" (Gomoku)
 
@@ -32,14 +32,14 @@ namespace WinFormApp
         #region 版本信息
 
         private static readonly string ApplicationName = Application.ProductName; // 程序名。
-        private static readonly string ApplicationEdition = "7.1.17"; // 程序版本。
+        private static readonly string ApplicationEdition = "7.1.18"; // 程序版本。
 
         private static readonly Int32 MajorVersion = new Version(Application.ProductVersion).Major; // 主版本。
         private static readonly Int32 MinorVersion = new Version(Application.ProductVersion).Minor; // 副版本。
         private static readonly Int32 BuildNumber = new Version(Application.ProductVersion).Build; // 版本号。
         private static readonly Int32 BuildRevision = new Version(Application.ProductVersion).Revision; // 修订版本。
-        private static readonly string LabString = "R17"; // 分支名。
-        private static readonly string BuildTime = "181002-1400"; // 编译时间。
+        private static readonly string LabString = "R18"; // 分支名。
+        private static readonly string BuildTime = "190525-1400"; // 编译时间。
 
         //
 
@@ -71,7 +71,8 @@ namespace WinFormApp
             new Version(7, 1, 17000, 5417),
             new Version(7, 1, 17000, 5443),
             new Version(7, 1, 17000, 5602),
-            new Version(7, 1, 17000, 7785)
+            new Version(7, 1, 17000, 7785),
+            new Version(7, 1, 17000, 7813)
         };
 
         //
@@ -7347,10 +7348,7 @@ namespace WinFormApp
             // 鼠标释放 Panel_StepTagNumAdjustment。
             //
 
-            if (e.Button == MouseButtons.Left)
-            {
-                StepTagNumIsAdjusting = false;
-            }
+            StepTagNumIsAdjusting = false;
         }
 
         private void Panel_StepTagNumAdjustment_MouseMove(object sender, MouseEventArgs e)
