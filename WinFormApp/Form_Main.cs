@@ -1,8 +1,8 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-Copyright © 2019 chibayuki@foxmail.com
+Copyright © 2020 chibayuki@foxmail.com
 
 五子棋 (Gomoku)
-Version 7.1.17000.7822.R18.190525-1400
+Version 7.1.17000.7822.R19.200404-0000
 
 This file is part of "五子棋" (Gomoku)
 
@@ -32,14 +32,14 @@ namespace WinFormApp
         #region 版本信息
 
         private static readonly string ApplicationName = Application.ProductName; // 程序名。
-        private static readonly string ApplicationEdition = "7.1.18"; // 程序版本。
+        private static readonly string ApplicationEdition = "7.1.19"; // 程序版本。
 
         private static readonly Int32 MajorVersion = new Version(Application.ProductVersion).Major; // 主版本。
         private static readonly Int32 MinorVersion = new Version(Application.ProductVersion).Minor; // 副版本。
         private static readonly Int32 BuildNumber = new Version(Application.ProductVersion).Build; // 版本号。
         private static readonly Int32 BuildRevision = new Version(Application.ProductVersion).Revision; // 修订版本。
-        private static readonly string LabString = "R18"; // 分支名。
-        private static readonly string BuildTime = "190525-1400"; // 编译时间。
+        private static readonly string LabString = "R19"; // 分支名。
+        private static readonly string BuildTime = "200404-0000"; // 编译时间。
 
         //
 
@@ -2193,7 +2193,7 @@ namespace WinFormApp
 
                     if (StringText.Length > 0)
                     {
-                        Color StringColor = Com.ColorManipulation.GetComplementaryColor(Cr_Cen);
+                        Color StringColor = ((Com.ColorX)Cr_Cen).Invert.ToColor();
                         Font StringFont = Com.Text.GetSuitableFont(StringText, new Font("微软雅黑", 9F, FontStyle.Regular, GraphicsUnit.Point, 134), new SizeF(Rect_Cen.Width * 0.75F, Rect_Cen.Height * 0.6F));
                         RectangleF StringRect = new RectangleF();
                         StringRect.Size = BmpGrap.MeasureString(StringText, StringFont);
